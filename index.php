@@ -23,6 +23,7 @@
 	      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
 	    <![endif]-->
 
+	    <script src="VoiceTrainer.js"></script>
 	    <title>Söngþjálfi</title>
 	</head>
 	<body role="document">
@@ -47,6 +48,12 @@
 		</nav>
 		<div class="container" role="main">
 			<h1 id="Test">Hello, World!</h1>
+			<audio autoplay id="replay">Your browser does not support the audio tag.</audio>
+			<div class="panel panel-default">
+				<div class="panel-body">
+					<canvas>Your browser does not support the canvas tag</canvas>
+				</div>
+			</div>
 		</div>
 	</body>
 </html>
