@@ -53,7 +53,7 @@
 		</nav>
 		<div class="container" role="main">
 			<h1 id="Test">Hello, World!</h1>
-			<audio autoplay id="replay">Your browser does not support the audio tag.</audio>
+			<!--audio autoplay id="replay">Your browser does not support the audio tag.</audio-->
 			<div class="panel panel-default">
 				<div class="panel-body">
 					<canvas id="render">Your browser does not support the canvas tag</canvas>

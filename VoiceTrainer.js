@@ -22,7 +22,7 @@ window.onload = function() {
 	  	return;
 	}
 
-	var audioElement = $('#replay');
+	//var audioElement = $('#replay');
 
 	window.AudioContext = window.AudioContext ||
                       window.webkitAudioContext;
@@ -46,14 +46,35 @@ window.onload = function() {
 			alert('Browser does not support AnalyserNode, an imperative tool for this application.');
 			return;
 		}
-		microphone.connect(analyser);
-		analyser.connect(context.destination);
+
+		var gain = context.createGain();
+		gain.gain.value = 32;
+
+		//Connect audio modules up
+		microphone.connect(gain);
+		gain.connect(analyser);
+		//analyser.connect(context.destination);
+		var on = false;
+		$("#Test").bind("click",function(){
+			if(on){
+				analyser.disconnect();
+				on = false;
+			} else {
+				analyser.connect(context.destination);
+				on = true;
+			}
+		})
+
+
+
+		//For debugging
 		console.log(microphone);
 		console.log(analyser);
-		var fbc_array= new Uint8Array(analyser.fftSize);
+		var fbc_array= new Uint8Array(analyser.fftSize); //Not actualy used as an FCB array anymore, but oh well
 		analyser.getByteTimeDomainData(fbc_array);
 		console.log(fbc_array);
 
+		//Get some variable ready for the canvas
 		var canvas = $('#render')[0];
 		var ctx = canvas.getContext('2d');
   		canvas.width  = canvas.offsetWidth;
@@ -75,9 +96,23 @@ window.onload = function() {
 			}
 			//ctx.closePath();
 			ctx.stroke();
+
+			ctx.font="10px Georgia";
+			ctx.fillText(maxDiff(fftArray,l)+"Diff",10,10);
 		}
 
 		frameLooper();
+	}
+
+	function maxDiff(array,len)
+	{
+		var max = 0;
+		for(var i = 0; i < len; i++){
+			if(Math.abs(128 - array[i]) > max){
+				max = Math.abs(128 - array[i]);
+			}
+		}
+		return max;
 	}
 
     navigator.getUserMedia({audio:true}, processStream, function(err){console.log(err);});
