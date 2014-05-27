@@ -24,6 +24,11 @@
 	    <![endif]-->
 
 	    <script src="VoiceTrainer.js"></script>
+
+	    <style type="text/css" title="currentStyle" media="screen">
+			@import "extra.css";
+		</style>
+
 	    <title>Söngþjálfi</title>
 	</head>
 	<body role="document">
@@ -51,7 +56,7 @@
 			<audio autoplay id="replay">Your browser does not support the audio tag.</audio>
 			<div class="panel panel-default">
 				<div class="panel-body">
-					<canvas>Your browser does not support the canvas tag</canvas>
+					<canvas id="render">Your browser does not support the canvas tag</canvas>
 				</div>
 			</div>
 		</div>

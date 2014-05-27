@@ -4,6 +4,8 @@ function hasGetUserMedia() {
 }
 
 var keepMe;
+var analyser;
+var fftArray;
 
 window.onload = function() {
 	if (hasGetUserMedia()) {
@@ -38,8 +40,44 @@ window.onload = function() {
 		keepMe = microphone; // Disgusting Mozilla hack. It appears to throw the variable out if it's not global.
 		/*var filter = context.createBiquadFilter();
 		microphone.connect(filter);
-		filter*/microphone.connect(context.destination);
+		filter*/ //microphone.connect(context.destination);
+		analyser = context.createAnalyser();
+		if(!analyser){
+			alert('Browser does not support AnalyserNode, an imperative tool for this application.');
+			return;
+		}
+		microphone.connect(analyser);
+		analyser.connect(context.destination);
 		console.log(microphone);
+		console.log(analyser);
+		var fbc_array= new Uint8Array(analyser.fftSize);
+		analyser.getByteTimeDomainData(fbc_array);
+		console.log(fbc_array);
+
+		var canvas = $('#render')[0];
+		var ctx = canvas.getContext('2d');
+  		canvas.width  = canvas.offsetWidth;
+  		canvas.height = canvas.offsetHeight;
+		var w = canvas.width;
+		var h = canvas.height;
+		var diff = w/analyser.fftSize;
+
+		function frameLooper(){
+			window.requestAnimationFrame(frameLooper);
+			var l = analyser.fftSize;
+			fftArray = new Uint8Array(l);
+			analyser.getByteTimeDomainData(fftArray);
+			ctx.clearRect(0,0,w,h);
+			ctx.beginPath()
+			ctx.moveTo(0,fftArray[0])
+			for(var i = 0; i < l; i++){
+				ctx.lineTo(i*diff,fftArray[i]);
+			}
+			//ctx.closePath();
+			ctx.stroke();
+		}
+
+		frameLooper();
 	}
 
     navigator.getUserMedia({audio:true}, processStream, function(err){console.log(err);});
