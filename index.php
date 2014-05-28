@@ -72,16 +72,27 @@
 						</div>
 					</div>
 				</div>
+				<div class="container col-lg-3">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h3 class="panel-title">FFT range</h3>
+						</div>
+						<div class="panel-body">
+							<input id="fftSpan" data-slider-id="span-slider" type="text" class="span2" value="" data-slider-min="0" data-slider-step="1" data-slider-value="[0,100]"/>
+						</div>
+					</div>
+				</div>
 			</div>
 			<!--audio autoplay id="replay">Your browser does not support the audio tag.</audio-->
-			<div class="panel panel-default row">
-				<div class="panel-body">
-					<div class="container col-lg-6 col-md-12">
-						<canvas id="render-pitch">Your browser does not support the canvas tag</canvas>
-					</div>
-					<div class="container col-lg-6 col-md-12">
-						<canvas id="render-waveform"></canvas>
-					</div>
+			<div class="well row" id="proto-output">
+				<div class="container col-lg-4 col-md-12">
+					<canvas id="render-pitch">Your browser does not support the canvas tag</canvas>
+				</div>
+				<div class="container col-lg-4 col-md-12">
+					<canvas id="render-fft"></canvas>
+				</div>
+				<div class="container col-lg-4 col-md-12">
+					<canvas id="render-waveform"></canvas>
 				</div>
 			</div>
 		</div>

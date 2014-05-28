@@ -1,9 +1,25 @@
-#render-waveform, #render-pitch
+#proto-output canvas
 {
 	width:100%;
 	height:256px;
+	background-color: #FAFAFA;
 }
 
-#gain-slider .slider-selection {
-	background: #BABABA;
+#gain-slider .slider-selection, #span-slider .slider-selection {
+	background: #00AAFF;
+}
+
+#gain-slider .slider-track, #span-slider .slider-track
+{
+	background: #7ED4FF
+}
+
+.slider-handle
+{
+	opacity: 1 !important;
+}
+
+#fftSpan
+{
+	display:none;
 }

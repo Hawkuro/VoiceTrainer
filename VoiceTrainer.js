@@ -5,6 +5,7 @@ function hasGetUserMedia() {
 
 var keepMe;
 var analyser;
+var wfArray = [];
 var fftArray;
 
 window.onload = function() {
@@ -88,34 +89,92 @@ window.onload = function() {
 		analyser.getByteTimeDomainData(fbc_array);
 		console.log(fbc_array);*/
 
-		//Get some variable ready for the canvas
-		var wfCanvas = $('#render-waveform')[0];
-		var wfCtx = wfCanvas.getContext('2d');
-  		wfCanvas.width  = wfCanvas.offsetWidth;
-  		wfCanvas.height = wfCanvas.offsetHeight;
-		var w = wfCanvas.width;
-		var h = wfCanvas.height;
-		var diff = w/analyser.fftSize;
+		//Get some variable ready for the waveform-canvas
+		var wf = initCanvas('render-waveform');
+
+		var wfL = analyser.fftSize;
+		wfArray[0] = new Uint8Array(wfL);
+		wfArray[1] = new Uint8Array(wfL);
+		var wfDiff = wf.w/(wfL*wfArray.length);
+
+		var fft = initCanvas('render-fft');
+
+		var fftL = analyser.frequencyBinCount;
+		var fftMin = 0;
+		var fftMax = 100;
+		var fftDiff = fft.w/(fftMax - fftMin);
+		fftArray = new Float32Array(fftL);
+
+		$("#fftSpan").slider({max:fftL-1});
+		$("#span-slider").bind('slide',function(evt){
+			var value = $('#fftSpan').slider('getValue');
+			fftMin = value[0];
+			fftMax = value[1];
+			fftDiff = fft.w/(fftMax - fftMin+1);
+		})
+
+		var pit = initCanvas('render-pitch');
 
 		function frameLooper(){
 			window.requestAnimationFrame(frameLooper);
-			var l = analyser.fftSize;
-			fftArray = new Uint8Array(l);
-			analyser.getByteTimeDomainData(fftArray);
-			wfCtx.clearRect(0,0,w,h);
-			wfCtx.beginPath()
-			wfCtx.moveTo(0,fftArray[0])
-			for(var i = 0; i < l; i++){
-				wfCtx.lineTo(i*diff,fftArray[i]);
+
+			//-----------------
+			// Render waveform
+			//-----------------
+			analyser.getByteTimeDomainData(wfArray[0]);
+			analyser.getByteTimeDomainData(wfArray[1]);
+
+			wf.ctx.clearRect(0,0,wf.w,wf.h);
+			wf.ctx.beginPath()
+			wf.ctx.moveTo(0,wfArray[0][0])
+			for(var i = 0; i < wfArray.length; i++){
+				for(var j = 0; j < wfL; j++){
+					wf.ctx.lineTo((i*wfL+j)*wfDiff,wfArray[i][j]);
+				}
 			}
 			//wfCtx.closePath();
-			wfCtx.stroke();
+			wf.ctx.stroke();
+			// Render maxDiff text
+			wf.ctx.font="10px Georgia";
+			wf.ctx.fillText("maxDiff =" + maxDiff(wfArray,wfL),10,10);
 
-			wfCtx.font="10px Georgia";
-			wfCtx.fillText("maxDiff =" + maxDiff(fftArray,l),10,10);
+			//------------
+			// Render fft
+			//------------
+			analyser.getFloatFrequencyData(fftArray);
+			fft.ctx.clearRect(0,0,fft.w,fft.h);
+			var h;
+			// Yup, we're doing this with the GPU
+			fft.ctx.beginPath();
+			for(var i = Math.max(fftMin,0); i <= fftMax && i < fftL; i++){
+				h = fftArray[i];
+				fft.ctx.rect((i-fftMin)*fftDiff, -h-10 ,fftDiff, fft.h+h);
+			}
+			/*fft.ctx.rect(10,10,10,10);
+			fft.ctx.rect(30,15,10,10);*/
+			fft.ctx.fill();
 		}
 
 		frameLooper();
+	}
+
+	function adjustCanvas(canvas)
+	{
+		canvas.width  = canvas.offsetWidth;
+  		canvas.height = canvas.offsetHeight;
+	}
+
+	function initCanvas(canvasName)
+	{
+		var canvas = $('#' + canvasName)[0];
+		var ctx = canvas.getContext('2d');
+		adjustCanvas(canvas);
+		return {
+			canvas: canvas,
+			ctx: ctx,
+			w: canvas.width,
+			h: canvas.height
+		};
 	}
 
 	function maxDiff(array,len)
