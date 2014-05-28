@@ -53,6 +53,7 @@ window.onload = function() {
 			alert('Browser does not support AnalyserNode, an imperative tool for this application.');
 			return;
 		}
+		analyser.fftSize=2048;
 
 		var gain = context.createGain();
 		gain.gain.value = 1;
@@ -69,9 +70,11 @@ window.onload = function() {
 		$("#Test").bind("click",function(){
 			if(on){
 				analyser.disconnect();
+				this.active=false;
 				on = false;
 			} else {
 				analyser.connect(context.destination);
+				this.active=true;
 				on = true;
 			}
 		})
@@ -86,12 +89,12 @@ window.onload = function() {
 		console.log(fbc_array);*/
 
 		//Get some variable ready for the canvas
-		var canvas = $('#render')[0];
-		var ctx = canvas.getContext('2d');
-  		canvas.width  = canvas.offsetWidth;
-  		canvas.height = canvas.offsetHeight;
-		var w = canvas.width;
-		var h = canvas.height;
+		var wfCanvas = $('#render-waveform')[0];
+		var wfCtx = wfCanvas.getContext('2d');
+  		wfCanvas.width  = wfCanvas.offsetWidth;
+  		wfCanvas.height = wfCanvas.offsetHeight;
+		var w = wfCanvas.width;
+		var h = wfCanvas.height;
 		var diff = w/analyser.fftSize;
 
 		function frameLooper(){
@@ -99,17 +102,17 @@ window.onload = function() {
 			var l = analyser.fftSize;
 			fftArray = new Uint8Array(l);
 			analyser.getByteTimeDomainData(fftArray);
-			ctx.clearRect(0,0,w,h);
-			ctx.beginPath()
-			ctx.moveTo(0,fftArray[0])
+			wfCtx.clearRect(0,0,w,h);
+			wfCtx.beginPath()
+			wfCtx.moveTo(0,fftArray[0])
 			for(var i = 0; i < l; i++){
-				ctx.lineTo(i*diff,fftArray[i]);
+				wfCtx.lineTo(i*diff,fftArray[i]);
 			}
-			//ctx.closePath();
-			ctx.stroke();
+			//wfCtx.closePath();
+			wfCtx.stroke();
 
-			ctx.font="10px Georgia";
-			ctx.fillText(maxDiff(fftArray,l)+"Diff",10,10);
+			wfCtx.font="10px Georgia";
+			wfCtx.fillText("maxDiff =" + maxDiff(fftArray,l),10,10);
 		}
 
 		frameLooper();
