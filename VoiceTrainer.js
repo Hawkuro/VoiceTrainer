@@ -8,6 +8,13 @@ var analyser;
 var fftArray;
 
 window.onload = function() {
+	//Turn gain input into slider
+	$('#gain').slider({
+		formater: function(value) {
+			return Number(value);
+		}
+	});
+
 	if (hasGetUserMedia()) {
 	  	// Good to go!
 	  	//alert('Good to go!');
@@ -48,7 +55,11 @@ window.onload = function() {
 		}
 
 		var gain = context.createGain();
-		gain.gain.value = 32;
+		gain.gain.value = 1;
+		$('#gain-slider').bind("slide",function(evt){
+			gain.gain.value = Math.pow(2, $('#gain').slider('getValue'));
+			console.log(gain.gain.value);
+		});
 
 		//Connect audio modules up
 		microphone.connect(gain);
@@ -68,11 +79,11 @@ window.onload = function() {
 
 
 		//For debugging
-		console.log(microphone);
+		/*console.log(microphone);
 		console.log(analyser);
 		var fbc_array= new Uint8Array(analyser.fftSize); //Not actualy used as an FCB array anymore, but oh well
 		analyser.getByteTimeDomainData(fbc_array);
-		console.log(fbc_array);
+		console.log(fbc_array);*/
 
 		//Get some variable ready for the canvas
 		var canvas = $('#render')[0];

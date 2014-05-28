@@ -29,6 +29,14 @@
 			@import "extra.css";
 		</style>
 
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.2/modernizr.min.js"></script>
+
+		<!--style type="text/css" title="BootstrapSliderStyle" media="screen">
+			@import "Bootstrap-slider/css/slider.css";
+		</style-->
+		<link rel="stylesheet" href="Bootstrap-slider/slider.css" type="text/css">
+		<script src="Bootstrap-slider/bootstrap-slider.js" type="text/javascript"></script>
+
 	    <title>Söngþjálfi</title>
 	</head>
 	<body role="document">
@@ -57,6 +65,16 @@
 			<div class="panel panel-default">
 				<div class="panel-body">
 					<canvas id="render">Your browser does not support the canvas tag</canvas>
+				</div>
+			</div>
+			<div class="container col-lg-3">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title">Gain</h3>
+					</div>
+					<div class="panel-body">
+						<input id="gain" data-slider-id='gain-slider' type="text" data-slider-min="-10" data-slider-max="10" data-slider-step="0.25" data-slider-value="0"/>
+					</div>
 				</div>
 			</div>
 		</div>
