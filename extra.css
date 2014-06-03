@@ -23,3 +23,16 @@
 {
 	display:none;
 }
+
+
+
+.btn::-moz-focus-inner /* Source: https://stackoverflow.com/questions/71074/how-to-remove-firefoxs-dotted-outline-on-buttons-as-well-as-links */
+{
+	border: 0;
+}
+
+.btn:focus, .btn:active, .btn:active:focus, .btn.active:focus
+{ /* Source: https://stackoverflow.com/questions/71074/how-to-remove-firefoxs-dotted-outline-on-buttons-as-well-as-links */
+	outline:none;
+	border:0;
+}

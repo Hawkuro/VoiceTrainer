@@ -23,6 +23,7 @@
 	      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
 	    <![endif]-->
 
+	    <script src="dsp.js"></script>
 	    <script src="VoiceTrainer.js"></script>
 
 	    <style type="text/css" title="currentStyle" media="screen">
@@ -61,7 +62,7 @@
 		</nav>
 		<div class="container" role="main">
 			<div class="container row">
-				<div class="container col-lg-2"><button type="button" data-toggle="button" class="btn btn-primary btn-lg" id="Test">Toggle feedback</button></div>
+				<div class="container col-lg-2"><button type="button" data-toggle="button" class="btn btn-primary btn-lg" id="Feedback">Toggle feedback</button></div>
 				<div class="container col-lg-3">
 					<div class="panel panel-default">
 						<div class="panel-heading">
@@ -78,10 +79,11 @@
 							<h3 class="panel-title">FFT range</h3>
 						</div>
 						<div class="panel-body">
-							<input id="fftSpan" data-slider-id="span-slider" type="text" class="span2" value="" data-slider-min="0" data-slider-step="1" data-slider-value="[0,100]"/>
+							<input id="fftSpan" data-slider-id="span-slider" type="text" class="span2" value="" data-slider-min="0" data-slider-step="1" data-slider-value="[1,100]"/>
 						</div>
 					</div>
 				</div>
+				<div class="container col-lg-3"><button type="button" data-toggle="button" class="btn btn-primary btn-lg" id="Oscillator">Toggle Mic./Oscilator</button></div>
 			</div>
 			<!--audio autoplay id="replay">Your browser does not support the audio tag.</audio-->
 			<div class="well row" id="proto-output">
