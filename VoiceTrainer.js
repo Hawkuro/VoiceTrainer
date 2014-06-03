@@ -5,8 +5,6 @@ function hasGetUserMedia() {
 
 var keepMe;
 var analyser;
-var wfArray;
-var fftArray;
 var fft;
 var pit;
 var wf;
@@ -118,102 +116,81 @@ window.onload = function() {
 		//Get some variable ready for the waveform-canvas
 		wf = initCanvas('render-waveform');
 
-		var wfL = analyser.fftSize;
-		wfArray = new Uint8Array(wfL);
-		var wfDiff = wf.w/wfL;
+		wf.l = 16384;//analyser.fftSize;
+		wf.array = new Uint8Array(wf.l);
+		wf.diff = wf.w/wf.l;
 
 		fft = initCanvas('render-fft');
 
-		var fftL = analyser.frequencyBinCount;
-		var fftMin = 1;
-		var fftMax = 100;
-		var fftDiff = fft.w/(fftMax - fftMin);
-		fftArray = new Float32Array(fftL);
-		analyser.getFloatFrequencyData(fftArray);
-		//console.log(fftArray);
+		fft.l = wf.l/2;//analyser.frequencyBinCount;
+		fft.min = 1;
+		fft.max = 100;
+		fft.diff = fft.w/(fft.max - fft.min);
+		fft.array = new Float32Array(fft.l);
+		analyser.getFloatFrequencyData(fft.array);
+		//console.log(fft.array);
 
-		$("#fftSpan").slider({max:fftL-1});
+		$("#fftSpan").slider({max:fft.l-1});
 		$("#span-slider").bind('slide',function(evt){
 			var value = $('#fftSpan').slider('getValue');
-			fftMin = value[0];
-			fftMax = value[1];
-			fftDiff = fft.w/(fftMax - fftMin+1);
+			fft.min = value[0];
+			fft.max = value[1];
+			fft.diff = fft.w/(fft.max - fft.min+1);
 		})
 
 		pit = initCanvas('render-pitch');
 
 		//var silence = -100; //This is the FFT output for complete silence, built-in.
 
-		var fftAn = new FFT(2048,44100);
-		var dftAn = new DFT(2048,44100);
+		var fftAn = new FFT(16384,44100);
 
-		function frameLooper(){
+		var processor = context.createScriptProcessor(16384,1,1);
+		processor.onaudioprocess = function(evt){
+			var buff = evt.inputBuffer;
+			evt.outputBuffer = buff;
+			var data = buff.getchannelData(0);
+
+		}
+
+		/*!!function frameLooper(){
 			window.requestAnimationFrame(frameLooper);
 
 			//-----------------
 			// Render waveform
 			//-----------------
-			analyser.getByteTimeDomainData(wfArray);
 
-			wf.ctx.clearRect(0,0,wf.w,wf.h);
-			wf.ctx.beginPath()
-			wf.ctx.moveTo(0,wfArray[0])
-			for(var j = 0; j < wfL; j++){
-				wf.ctx.lineTo(j*wfDiff,wfArray[j]);
-			}
-			//wfCtx.closePath();
-			wf.ctx.stroke();
-			// Render maxDiff text
-			wf.ctx.font="10px Georgia";
-			wf.ctx.fillText("maxDiff =" + maxDiff(wfArray,wfL),10,10);
+			renderWaveform(analyser);
 
 			//------------
 			// Render FFT
 			//------------
 
-			/*analyser.getFloatFrequencyData(fftArray);
+			/*analyser.getFloatFrequencyData(fft.array);
 			fft.ctx.clearRect(0,0,fft.w,fft.h);
 			var h;
 			// Yup, we're doing this with the GPU
 			fft.ctx.beginPath();
-			for(var i = Math.max(fftMin,0); i <= fftMax && i < fftL; i++){
-				h = fftArray[i];
-				fft.ctx.rect((i-fftMin)*fftDiff, fft.h/2 - (h - silence) ,fftDiff, h-silence);
+			for(var i = Math.max(fft.min,0); i <= fft.max && i < fft.l; i++){
+				h = fft.array[i];
+				fft.ctx.rect((i-fft.min)*fft.diff, fft.h/2 - (h - silence) ,fft.diff, h-silence);
 			}*/
 			/*fft.ctx.rect(10,10,10,10);
 			fft.ctx.rect(30,15,10,10);*/
 			/*fft.ctx.fill();*/
 
-			fft.ctx.clearRect(0,0,fft.w,fft.h);
-			fftAn.forward(wfArray);
-			var FFTSpec = fftAn.spectrum;
-			fft.ctx.beginPath();
-			for(var i = Math.max(fftMin,0); i <= fftMax && i < fftL; i++){
-				h = FFTSpec[i];
-				fft.ctx.rect((i-fftMin)*fftDiff, fft.h/2 - (h) ,fftDiff, h);
-			}
-			fft.ctx.fill();
-
-			fft.ctx.font="10px Georgia";
-			fft.ctx.fillText("FFT",100,10);
-
-			var top = findTop(FFTSpec, fftMin, fftMax);
-			fft.ctx.beginPath();
-			fft.ctx.moveTo((top-fftMin+0.5)*fftDiff,fft.h);
-			fft.ctx.lineTo((top-fftMin+0.5)*fftDiff,0);
-			fft.ctx.stroke();
+			/*!!renderFFT(analyser, fftAn);
 
 			//------------
 			// Render DFT
 			//------------
 
 			/*pit.ctx.clearRect(0,0,pit.w,pit.h);
-			dftAn.forward(wfArray);
+			dftAn.forward(wf.array);
 			var DFTSpec = fftAn.spectrum;
 			pit.ctx.beginPath();
-			for(var i = Math.max(fftMin,0); i <= fftMax && i < fftL; i++){
+			for(var i = Math.max(fft.min,0); i <= fft.max && i < fft.l; i++){
 				h = DFTSpec[i];
-				pit.ctx.rect((i-fftMin)*fftDiff, pit.h/2 - (h) ,fftDiff, h);
+				pit.ctx.rect((i-fft.min)*fft.diff, pit.h/2 - (h) ,fft.diff, h);
 			}
 			pit.ctx.fill();
 
@@ -224,16 +201,53 @@ window.onload = function() {
 			// Render Pitch
 			//--------------
 
+		/*!!}
+
+		frameLooper();*/
+	}
+
+	function renderWaveform(){//(analyser ){
+			//analyser.getByteTimeDomainData(wf.array);
+
+			wf.ctx.clearRect(0,0,wf.w,wf.h);
+			wf.ctx.beginPath()
+			wf.ctx.moveTo(0,wf.array[0])
+			for(var j = 0; j < wf.l; j++){
+				wf.ctx.lineTo(j*wf.diff,wf.array[j]);
+			}
+			//wfCtx.closePath();
+			wf.ctx.stroke();
+			// Render maxDiff text
+			wf.ctx.font="10px Georgia";
+			wf.ctx.fillText("maxDiff =" + maxDiff(wf.array,wf.l),10,10);
+	}
+
+	function renderFFT(analyser, fftAn){
+
+			fft.ctx.clearRect(0,0,fft.w,fft.h);
+			fftAn.forward(wf.array);
+			var FFTSpec = fftAn.spectrum;
+			fft.ctx.beginPath();
+			for(var i = Math.max(fft.min,0); i <= fft.max && i < fft.l; i++){
+				h = FFTSpec[i];
+				fft.ctx.rect((i-fft.min)*fft.diff, fft.h/2 - (h) ,fft.diff, h);
+			}
+			fft.ctx.fill();
+
+			fft.ctx.font="10px Georgia";
+			fft.ctx.fillText("FFT",100,10);
+
+			var top = findTop(FFTSpec, fft.min, fft.max);
+			fft.ctx.beginPath();
+			fft.ctx.moveTo((top-fft.min+0.5)*fft.diff,fft.h);
+			fft.ctx.lineTo((top-fft.min+0.5)*fft.diff,0);
+			fft.ctx.stroke();
+
+			// render pitch
 			pit.ctx.clearRect(0,0,pit.w,pit.h);
 			pit.ctx.font="100px Georgia";
 			pit.ctx.textAlign="center";
 			pit.ctx.fillText(top.toFixed(2),pit.w/2,pit.h/2+50);
-		}
-
-		frameLooper();
-	}
-
-	function renderWaveform(analyser){
 
 	}
 
