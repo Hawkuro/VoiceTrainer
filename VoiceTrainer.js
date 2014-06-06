@@ -265,9 +265,15 @@ function renderFFT(data, fftAn){//(analyser, fftAn){
 
 	// render pitch
 	pit.ctx.clearRect(0,0,pit.w,pit.h);
-	pit.ctx.font="70px Georgia";
+	pit.ctx.font="50px Georgia";
 	pit.ctx.textAlign="center";
-	pit.ctx.fillText((top*SAMPLE_RATE/SAMPLE_SIZE).toFixed(2),pit.w/2,pit.h/2+35);
+
+	var freq = (top*SAMPLE_RATE/SAMPLE_SIZE).toFixed(2);
+	var note = NoteHandler.getFromFreq(freq);
+
+	pit.ctx.fillText(freq + "Hz",pit.w/2,55);
+	pit.ctx.fillText(note.getNoteName(),pit.w/2,pit.h/2+20);
+	pit.ctx.fillText(note.getCents() + "c",pit.w/2, pit.h - 15);
 
 }
 

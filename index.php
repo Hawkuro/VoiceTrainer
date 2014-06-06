@@ -24,6 +24,7 @@
 	    <![endif]-->
 
 	    <script src="dsp.js"></script>
+	    <script type="text/javascript" src="NoteConverter.js"></script>
 	    <script src="VoiceTrainer.js"></script>
 
 	    <style type="text/css" title="currentStyle" media="screen">
