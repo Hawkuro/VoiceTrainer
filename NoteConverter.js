@@ -76,22 +76,24 @@ var NoteHandler = {
 
 	altName: function(name){
 		return altNames[name] || name;
-	}
+	},
 
 	getFromFreq: function(freq){
 		if(this._notes[freq]){ return this._notes[freq]; }
+		console.log("New frequency: " + freq);
 
 		var note = new Note("freq", {freq: freq});
-		_notes[freq] = note;
+		this._notes[freq] = note;
 		return note;
 	},
 
 	getFromNote: function(noteNum){
 		var freq = this._freqFromNoteNumber(noteNum);
 		if(this._notes[freq]){ return this._notes[freq]; }
+		console.log("New frequency: " + freq);
 
 		var note = new Note("note", {note: noteNum, freq: freq});
-		_notes[freq] = note;
+		this._notes[freq] = note;
 		return note;
 	},
 
@@ -99,14 +101,15 @@ var NoteHandler = {
 		var ans = this._freqFromNoteName(noteName, octave);
 
 		if(this._notes[ans.freq]){ return this._notes[ans.freq]; }
+		console.log("New frequency: " + freq);
 
 		var note = new Note("noteName", {noteName: noteName, octave: octave, freq: ans.freq, note: and.note});
-		_notes[freq] = note;
+		this._notes[freq] = note;
 		return note;
-	}
+	},
 
 	_baseFreq: 440,
-	_baseOffset: 69,
+	_baseOffset: 57,
 
 	_freqFromNoteNumber: function(note){
 		return this._baseFreq*Math.pow(2, (note-this._baseOffset)/12);
@@ -119,7 +122,7 @@ var NoteHandler = {
 	_freqFromNoteName: function(noteName, octave){
 		var note = this._noteNumberFromName(noteName,octave);
 		return {freq: this._freqFromNoteNumber(), note: note};
-	}
+	},
 
 	_noteNameFromNumber: function(note){
 		var name = this.noteNames[note%12];
@@ -130,11 +133,11 @@ var NoteHandler = {
 		};
 	},
 
-	_noteNumberFromFreq: function(note){
+	_noteNumberFromFreq: function(freq){
 		return Math.round( 12*( Math.log(freq/this._baseFreq)/Math.log(2) ) ) + this._baseOffset;
 	},
 
 	_computeCents: function(freq, note){
-		return 1200*Math.log(freq / this._freqFromNoteNumber(note))/Math.log(2);
+		return Math.round(1200*Math.log(freq / this._freqFromNoteNumber(note))/Math.log(2));
 	}
 };
