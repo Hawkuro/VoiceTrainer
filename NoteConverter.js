@@ -35,13 +35,29 @@ Note.prototype._initFromNoteName = function(noteName, octave, freq, note){
 }
 
 Note.prototype._initFromFreq = function(freq){
-	
+
 	this._freq = freq;
 	this._note = NoteHandler._noteNumberFromFreq(freq);
 	var NN = NoteHandler._noteNameFromNumber(this._note);
 	this._noteName = NN.noteName;
 	this._octave = NN.octave;
 	this._cents = NoteHandler._computeCents(freq, this._note);
+}
+
+Note.prototype.getNoteNumber = function(){
+	return this._note;
+}
+
+Note.prototype.getNoteName = function(){
+	return this._noteName + this._octave;
+}
+
+Note.prototype.getCents = function(){
+	return this._cents;
+}
+
+Note.prototype.getFreq = function(){
+	return this._freq;
 }
 
 var NoteHandler = {
