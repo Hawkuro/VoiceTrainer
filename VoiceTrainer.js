@@ -13,6 +13,12 @@ var SAMPLE_RATE = 44100; // Not actually changeable :(
 var TWO_PI = 2*Math.PI; // DO NOT CHANGE
 var g_render = true;
 
+var extraFrames = 10;
+var extraFrameIndex = 0;
+var extraFrameStorage = [];
+var extraFrameCanvases = [];
+var extraFrameTops = [];
+
 
 window.onload = function() {
 	//Turn gain input into slider
@@ -26,6 +32,10 @@ window.onload = function() {
 		g_render = !g_render;
 		//console.log(g_render);
 	});
+
+	for(var i = 0; i < extraFrames; i++){
+		extraFrameCanvases[i] = addFFTCanvas(i);
+	}
 
 	if (hasGetUserMedia()) {
 	  	// Good to go!
@@ -251,7 +261,17 @@ function renderFFTandPitch(data, fftAn){//(analyser, fftAn){
 	var FFTSpec = fftAn.spectrum;
 	var top = findTop(fftAn, fft.min, fft.max);//(FFTSpec, fft.min, fft.max);
 
-	renderFFT(FFTSpec, fft, top, fft.diff);
+
+	var store = renderFFT(FFTSpec, fft, top, fft.diff);
+
+	extraFrameStorage.forEach(function(value, index, array){
+		if(!value){return;}
+		renderFFT(value, extraFrameCanvases[index], extraFrameTops[index]);
+	});
+
+	extraFrameStorage[extraFrameIndex] = store;
+	extraFrameTops[extraFrameIndex] = top;
+	extraFrameIndex = (extraFrameIndex + 1) % extraFrames;
 
 	// render pitch
 	pit.ctx.clearRect(0,0,pit.w,pit.h);
@@ -269,16 +289,19 @@ function renderFFTandPitch(data, fftAn){//(analyser, fftAn){
 
 function renderFFT(spectrum, canvasContainer, top, diff){
 	diff = diff || canvasContainer.w/(fft.max - fft.min+1);
+	var store = [];
 	canvasContainer.ctx.clearRect(0,0,canvasContainer.w,canvasContainer.h);
 	canvasContainer.ctx.font="10px Georgia";
 	canvasContainer.ctx.textAlign="center";
 	canvasContainer.ctx.beginPath();
-	for(var i = Math.max(fft.min,0); i <= fft.max && i < canvasContainer.l; i++){
+	for(var i = Math.max(fft.min,0); i <= fft.max && i < spectrum.length; i++){
 		h = spectrum[i];
-		canvasContainer.ctx.rect((i-fft.min)*fft.diff, canvasContainer.h/2*(1-h) ,fft.diff, h*canvasContainer.h/2);
+		store.push(h);
+		canvasContainer.ctx.rect((i-fft.min)*diff, canvasContainer.h/2*(1-h) ,diff, h*canvasContainer.h/2);
 		if(i%10===0){
-			canvasContainer.ctx.fillText(i, (i-fft.min)*fft.diff, canvasContainer.h/2 + 20)
+			canvasContainer.ctx.fillText(i, (i-fft.min)*diff, canvasContainer.h/2 + 20)
 		}
+		//if(i===1){console.log(canvasContainer);}
 	}
 	canvasContainer.ctx.fill();
 
@@ -287,10 +310,21 @@ function renderFFT(spectrum, canvasContainer, top, diff){
 
 	canvasContainer.ctx.beginPath();
 	canvasContainer.ctx.strokeStyle = '#ff0000';
-	canvasContainer.ctx.moveTo((top-canvasContainer.min+0.5)*canvasContainer.diff,canvasContainer.h);
-	canvasContainer.ctx.lineTo((top-canvasContainer.min+0.5)*canvasContainer.diff,0);
+	canvasContainer.ctx.moveTo((top-fft.min+0.5)*diff,canvasContainer.h);
+	canvasContainer.ctx.lineTo((top-fft.min+0.5)*diff,0);
 	canvasContainer.ctx.stroke();
 
+	return store;
+
+}
+
+function addFFTCanvas(num){
+	var well = $("#proto-output");
+	var cont = $("<div></div>",{"class": "container col-lg-4 col-md-12"});
+	var canv = $("<canvas></canvas>",{"id": ("fft"+num)})
+	cont.append(canv);
+	well.append(cont);
+	return initCanvas("fft"+num);
 }
 
 function findTop(FFTAnalyser, min, max){//(typedArray, min, max){
@@ -361,6 +395,11 @@ function resizeCanvases(){
 	adjustCanvas(pit.canvas);
 	adjustCanvas(fft.canvas);
 	adjustCanvas(wf.canvas);
+	extraFrameCanvases.forEach(function(value,index,array){
+		adjustCanvas(value.canvas);
+		value.h = value.canvas.height;
+		value.w = value.canvas.width;
+	})
 	wf.w = wf.canvas.width;
 	wf.h = wf.canvas.height;
 	fft.w = fft.canvas.width;
