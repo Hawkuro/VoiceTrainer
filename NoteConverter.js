@@ -80,7 +80,7 @@ var NoteHandler = {
 
 	getFromFreq: function(freq){
 		if(this._notes[freq]){ return this._notes[freq]; }
-		console.log("New frequency: " + freq);
+		//console.log("New frequency: " + freq);
 
 		var note = new Note("freq", {freq: freq});
 		this._notes[freq] = note;
@@ -90,7 +90,7 @@ var NoteHandler = {
 	getFromNote: function(noteNum){
 		var freq = this._freqFromNoteNumber(noteNum);
 		if(this._notes[freq]){ return this._notes[freq]; }
-		console.log("New frequency: " + freq);
+		//console.log("New frequency: " + freq);
 
 		var note = new Note("note", {note: noteNum, freq: freq});
 		this._notes[freq] = note;
@@ -101,7 +101,7 @@ var NoteHandler = {
 		var ans = this._freqFromNoteName(noteName, octave);
 
 		if(this._notes[ans.freq]){ return this._notes[ans.freq]; }
-		console.log("New frequency: " + freq);
+		//console.log("New frequency: " + freq);
 
 		var note = new Note("noteName", {noteName: noteName, octave: octave, freq: ans.freq, note: and.note});
 		this._notes[freq] = note;
