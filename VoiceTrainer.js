@@ -139,8 +139,8 @@ window.onload = function() {
 				wf.array = buff;
 				if(g_render){
 					renderWaveform(data);
-					renderFFT(data,fftAn);
-				}
+					renderFFTandPitch(data,fftAn);
+				} 
 			});
 		}
 		//Connect audio modules up
@@ -245,32 +245,13 @@ function renderWaveform(data){//(analyser ){
 	wf.ctx.fillText("maxDiff =" + maxDiff(data,wf.l),10,10);
 }
 
-function renderFFT(data, fftAn){//(analyser, fftAn){
+function renderFFTandPitch(data, fftAn){//(analyser, fftAn){
 
-	fft.ctx.clearRect(0,0,fft.w,fft.h);
 	fftAn.forward(data);
 	var FFTSpec = fftAn.spectrum;
-
-	fft.ctx.font="10px Georgia";
-	fft.ctx.textAlign="center";
-	fft.ctx.beginPath();
-	for(var i = Math.max(fft.min,0); i <= fft.max && i < fft.l; i++){
-		h = FFTSpec[i];
-		fft.ctx.rect((i-fft.min)*fft.diff, fft.h/2*(1-h) ,fft.diff, h*fft.h/2);
-		if(i%10===0){
-			fft.ctx.fillText(i, (i-fft.min)*fft.diff, fft.h/2 + 20)
-		}
-	}
-	fft.ctx.fill();
-
-	fft.ctx.font="10px Georgia";
-	fft.ctx.fillText("FFT",100,10);
-
 	var top = findTop(fftAn, fft.min, fft.max);//(FFTSpec, fft.min, fft.max);
-	fft.ctx.beginPath();
-	fft.ctx.moveTo((top-fft.min+0.5)*fft.diff,fft.h);
-	fft.ctx.lineTo((top-fft.min+0.5)*fft.diff,0);
-	fft.ctx.stroke();
+
+	renderFFT(FFTSpec, fft, top);
 
 	// render pitch
 	pit.ctx.clearRect(0,0,pit.w,pit.h);
@@ -283,6 +264,31 @@ function renderFFT(data, fftAn){//(analyser, fftAn){
 	pit.ctx.fillText(freq + "Hz",pit.w/2,55);
 	pit.ctx.fillText(note.getNoteName(),pit.w/2,pit.h/2+20);
 	pit.ctx.fillText(note.getCents() + "c",pit.w/2, pit.h - 15);
+
+}
+
+function renderFFT(spectrum, canvasContainer, top){
+	canvasContainer.ctx.clearRect(0,0,canvasContainer.w,canvasContainer.h);
+	canvasContainer.ctx.font="10px Georgia";
+	canvasContainer.ctx.textAlign="center";
+	canvasContainer.ctx.beginPath();
+	for(var i = Math.max(fft.min,0); i <= fft.max && i < canvasContainer.l; i++){
+		h = spectrum[i];
+		canvasContainer.ctx.rect((i-fft.min)*fft.diff, canvasContainer.h/2*(1-h) ,fft.diff, h*canvasContainer.h/2);
+		if(i%10===0){
+			canvasContainer.ctx.fillText(i, (i-fft.min)*fft.diff, canvasContainer.h/2 + 20)
+		}
+	}
+	canvasContainer.ctx.fill();
+
+	canvasContainer.ctx.font="10px Georgia";
+	canvasContainer.ctx.fillText("FFT",100,10);
+
+	canvasContainer.ctx.beginPath();
+	canvasContainer.ctx.strokeStyle = '#ff0000';
+	canvasContainer.ctx.moveTo((top-canvasContainer.min+0.5)*canvasContainer.diff,canvasContainer.h);
+	canvasContainer.ctx.lineTo((top-canvasContainer.min+0.5)*canvasContainer.diff,0);
+	canvasContainer.ctx.stroke();
 
 }
 
