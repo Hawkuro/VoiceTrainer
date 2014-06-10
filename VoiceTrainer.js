@@ -251,7 +251,7 @@ function renderFFTandPitch(data, fftAn){//(analyser, fftAn){
 	var FFTSpec = fftAn.spectrum;
 	var top = findTop(fftAn, fft.min, fft.max);//(FFTSpec, fft.min, fft.max);
 
-	renderFFT(FFTSpec, fft, top);
+	renderFFT(FFTSpec, fft, top, fft.diff);
 
 	// render pitch
 	pit.ctx.clearRect(0,0,pit.w,pit.h);
@@ -267,7 +267,8 @@ function renderFFTandPitch(data, fftAn){//(analyser, fftAn){
 
 }
 
-function renderFFT(spectrum, canvasContainer, top){
+function renderFFT(spectrum, canvasContainer, top, diff){
+	diff = diff || canvasContainer.w/(fft.max - fft.min+1);
 	canvasContainer.ctx.clearRect(0,0,canvasContainer.w,canvasContainer.h);
 	canvasContainer.ctx.font="10px Georgia";
 	canvasContainer.ctx.textAlign="center";
