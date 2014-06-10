@@ -62,7 +62,7 @@
 		</nav>
 		<div class="container" role="main">
 			<div class="container row">
-				<div class="container col-lg-2"><button type="button" data-toggle="button" class="btn btn-primary btn-lg" id="Feedback">Toggle feedback</button></div>
+				<div class="container col-lg-2"><button type="button" data-toggle="button" class="btn btn-primary btn-lg" id="Feedback">Toggle Feedback</button></div>
 				<div class="container col-lg-3">
 					<div class="panel panel-default">
 						<div class="panel-heading">
@@ -83,7 +83,8 @@
 						</div>
 					</div>
 				</div>
-				<div class="container col-lg-3"><button type="button" data-toggle="button" class="btn btn-primary btn-lg" id="Oscillator">Toggle Mic./Oscilator</button></div>
+				<div class="container col-lg-2"><button type="button" data-toggle="button" class="btn btn-primary btn-lg" id="Oscillator">Toggle Mic./Osc.</button></div>
+				<div class="container col-lg-2"><button type="button" data-toggle="button" class="btn btn-primary btn-lg" id="Render">Toggle Render</button></div>
 			</div>
 			<!--audio autoplay id="replay">Your browser does not support the audio tag.</audio-->
 			<div class="well row" id="proto-output">
