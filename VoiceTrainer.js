@@ -11,6 +11,8 @@ var pit; // Pitch canvas
 var SAMPLE_SIZE = 4096; // MUST be power of 2
 var SAMPLE_RATE = 44100; // Not actually changeable :(
 var TWO_PI = 2*Math.PI; // DO NOT CHANGE
+var g_render = true;
+
 
 window.onload = function() {
 	//Turn gain input into slider
@@ -18,6 +20,11 @@ window.onload = function() {
 		formater: function(value) {
 			return Number(value);
 		}
+	});
+
+	$('#Render').bind("click", function(evt) {
+		g_render = !g_render;
+		//console.log(g_render);
 	});
 
 	if (hasGetUserMedia()) {
@@ -39,7 +46,7 @@ window.onload = function() {
 	window.AudioContext = window.AudioContext ||
                       window.webkitAudioContext;
     if(window.AudioContext) {
-    	//Good to go
+    	// Good to go, continue
     } else {
     	alert('browser does not support AudioContext');
     	return;
@@ -57,7 +64,7 @@ window.onload = function() {
     	oscBuff.getChannelData(0).set(signal);
     	var oscNode = context.createBufferSource();
     	oscNode.buffer = oscBuff;
-    	//oscNode.noteOn(0);
+    	//oscNode.noteOn(0); //Does nothing
     	oscNode.loop=true;
     	oscNode.start(0);
 
@@ -130,8 +137,10 @@ window.onload = function() {
 			evt.outputBuffer.getChannelData(0).set(data);
 			window.requestAnimationFrame(function() {
 				wf.array = buff;
-				renderWaveform(data);
-				renderFFT(data,fftAn);
+				if(g_render){
+					renderWaveform(data);
+					renderFFT(data,fftAn);
+				}
 			});
 		}
 		//Connect audio modules up
