@@ -23,12 +23,12 @@
 	      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
 	    <![endif]-->
 
-	    <script src="dsp.js"></script>
-	    <script type="text/javascript" src="NoteConverter.js"></script>
-	    <script src="VoiceTrainer.js"></script>
+	    <script src="scripts/lib/dsp.js"></script>
+	    <script type="text/javascript" src="scripts/NoteConverter.js"></script>
+	    <script src="scripts/VoiceTrainer.js"></script>
 
 	    <style type="text/css" title="currentStyle" media="screen">
-			@import "extra.css";
+			@import "css/extra.css";
 		</style>
 
 		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.2/modernizr.min.js"></script>
