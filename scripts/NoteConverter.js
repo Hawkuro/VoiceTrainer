@@ -1,5 +1,5 @@
 function Note(initType, data){ // "immutable" note
-	var _note, _freq, _noteName, _octave, _cents;
+	var _note, _freq, _noteName, _octave, _cents, _pitch;
 	switch(initType){
 		case "freq":
 			this._initFromFreq(data.freq);
@@ -23,6 +23,7 @@ Note.prototype._initFromNote = function(note, freq){
 	this._note = note;
 	this._freq = freq || NoteHandler._freqFromNoteNumber(note);
 	this._cents = 0;
+	this._pitch = this._note;
 }
 
 Note.prototype._initFromNoteName = function(noteName, octave, freq, note){
@@ -32,6 +33,7 @@ Note.prototype._initFromNoteName = function(noteName, octave, freq, note){
 	this._note = note || NoteHandler._noteNumberFromName(noteName, octave);
 	this._freq = freq || NoteHandler._freqFromNoteNumber(note);
 	this._cents = 0;
+	this._pitch = this._note;
 }
 
 Note.prototype._initFromFreq = function(freq){
@@ -42,18 +44,23 @@ Note.prototype._initFromFreq = function(freq){
 	this._noteName = NN.noteName;
 	this._octave = NN.octave;
 	this._cents = NoteHandler._computeCents(freq, this._note);
+	this._pitch = NoteHandler._computePitch(this._note, this._cents);
 }
 
 Note.prototype.getNoteNumber = function(){
 	return this._note;
 }
 
-Note.prototype.getNoteName = function(){
-	return this._noteName + this._octave;
-}
-
 Note.prototype.getCents = function(){
 	return this._cents;
+}
+
+Note.prototype.getNotePitch = function(){
+	return this._pitch;
+}
+
+Note.prototype.getNoteName = function(){
+	return this._noteName + this._octave;
 }
 
 Note.prototype.getFreq = function(){
@@ -139,5 +146,9 @@ var NoteHandler = {
 
 	_computeCents: function(freq, note){
 		return Math.round(1200*Math.log(freq / this._freqFromNoteNumber(note))/Math.log(2));
+	},
+
+	_computePitch: function(note, cents){
+		return (note + cents*0.01).toFixed(2);
 	}
 };
