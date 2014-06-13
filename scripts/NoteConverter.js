@@ -55,7 +55,7 @@ Note.prototype.getFreq = function(){
 
 var NoteHandler = {
 
-	_notes: [],
+	_notes: {},
 
 	noteNames: ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "H"],
 

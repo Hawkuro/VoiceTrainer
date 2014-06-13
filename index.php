@@ -25,6 +25,8 @@
 
 	    <script src="scripts/lib/dsp.js"></script>
 	    <script type="text/javascript" src="scripts/NoteConverter.js"></script>
+	    <script type="text/javascript" src="scripts/utils.js"></script>
+	    <script type="text/javascript" src="scripts/debug.js"></script>
 	    <script src="scripts/VoiceTrainer.js"></script>
 
 	    <style type="text/css" title="currentStyle" media="screen">
@@ -62,41 +64,43 @@
 			</div>
 		</nav>
 		<div class="container" role="main">
-			<div class="container row">
-				<div class="container col-lg-2"><button type="button" data-toggle="button" class="btn btn-primary btn-lg" id="Feedback">Toggle Feedback</button></div>
-				<div class="container col-lg-3">
-					<div class="panel panel-default">
-						<div class="panel-heading">
-							<h3 class="panel-title">Gain</h3>
-						</div>
-						<div class="panel-body">
-							<input id="gain" data-slider-id='gain-slider' type="text" data-slider-min="-10" data-slider-max="10" data-slider-step="0.25" data-slider-value="0" data-slider-tooltip="hide"/>
-						</div>
-					</div>
-				</div>
-				<div class="container col-lg-3">
-					<div class="panel panel-default">
-						<div class="panel-heading">
-							<h3 class="panel-title">FFT range</h3>
-						</div>
-						<div class="panel-body">
-							<input id="fftSpan" data-slider-id="span-slider" type="text" class="span2" value="" data-slider-min="0" data-slider-step="1" data-slider-value="[1,100]"/>
+			<div class="container row" id="debug">
+				<div class="container row">
+					<div class="container col-lg-2"><button type="button" data-toggle="button" class="btn btn-primary btn-lg" id="Feedback">Toggle Feedback</button></div>
+					<div class="container col-lg-3">
+						<div class="panel panel-default">
+							<div class="panel-heading">
+								<h3 class="panel-title">Gain</h3>
+							</div>
+							<div class="panel-body">
+								<input id="gain" data-slider-id='gain-slider' type="text" data-slider-min="-10" data-slider-max="10" data-slider-step="0.25" data-slider-value="0" data-slider-tooltip="hide"/>
+							</div>
 						</div>
 					</div>
+					<div class="container col-lg-3">
+						<div class="panel panel-default">
+							<div class="panel-heading">
+								<h3 class="panel-title">FFT range</h3>
+							</div>
+							<div class="panel-body">
+								<input id="fftSpan" data-slider-id="span-slider" type="text" class="span2" value="" data-slider-min="0" data-slider-step="1"/>
+							</div>
+						</div>
+					</div>
+					<div class="container col-lg-2"><button type="button" data-toggle="button" class="btn btn-primary btn-lg" id="Oscillator">Toggle Mic./Osc.</button></div>
+					<div class="container col-lg-2"><button type="button" data-toggle="button" class="btn btn-primary btn-lg" id="Render">Toggle Render</button></div>
 				</div>
-				<div class="container col-lg-2"><button type="button" data-toggle="button" class="btn btn-primary btn-lg" id="Oscillator">Toggle Mic./Osc.</button></div>
-				<div class="container col-lg-2"><button type="button" data-toggle="button" class="btn btn-primary btn-lg" id="Render">Toggle Render</button></div>
-			</div>
-			<!--audio autoplay id="replay">Your browser does not support the audio tag.</audio-->
-			<div class="well row" id="proto-output">
-				<div class="container col-lg-4 col-md-12">
-					<canvas id="render-pitch">Your browser does not support the canvas tag</canvas>
-				</div>
-				<div class="container col-lg-4 col-md-12">
-					<canvas id="render-fft"></canvas>
-				</div>
-				<div class="container col-lg-4 col-md-12">
-					<canvas id="render-waveform"></canvas>
+				<!--audio autoplay id="replay">Your browser does not support the audio tag.</audio-->
+				<div class="well row" id="proto-output">
+					<div class="container col-lg-4 col-md-12">
+						<canvas id="render-pitch">Your browser does not support the canvas tag</canvas>
+					</div>
+					<div class="container col-lg-4 col-md-12">
+						<canvas id="render-fft"></canvas>
+					</div>
+					<div class="container col-lg-4 col-md-12">
+						<canvas id="render-waveform"></canvas>
+					</div>
 				</div>
 			</div>
 		</div>
