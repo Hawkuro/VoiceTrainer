@@ -4,8 +4,8 @@ window.onload = function() {
 	compatiCheck();
 
 	// Our new friend the Audio Context. This allows audio processing in pure JS. Wünderbar.
-    var context = new AudioContext();
-    SAMPLE_RATE = context.sampleRate;
+	var context = new AudioContext();
+	SAMPLE_RATE = context.sampleRate;
 
 	G.fftAn = new FFT(SAMPLE_SIZE,SAMPLE_RATE); // Make FFT analyser, i.e. an object that uses FFT on
 												// wavefrom arrays.
