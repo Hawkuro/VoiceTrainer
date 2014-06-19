@@ -45,6 +45,12 @@ var Debug = {
 		var pit = initCanvas('render-pitch');
 		this.pit = pit;
 
+		if(this.active){
+			$("#debug").show();
+			resizeCanvases();
+		}
+
+
 		$("#fftSpan").slider({max:fft.l-1, value: [1,SAMPLE_SIZE/32] });
 		$("#span-slider").bind('slide',function(evt){
 			var value = $('#fftSpan').slider('getValue');
@@ -57,10 +63,10 @@ var Debug = {
 		$("#Oscillator").bind("click", function(evt){
 			if(this.active){
 				oscNode.disconnect();
-				microphone.connect(gainNode);
+				G.microphone.connect(gainNode);
 				this.active = false;
 			} else {
-				microphone.disconnect();
+				G.microphone.disconnect();
 				oscNode.connect(gainNode);
 				this.active = true;
 			}
@@ -74,7 +80,7 @@ var Debug = {
 				//processor.disconnect();
 				this.active=false;
 			} else {
-				analyNode.connect(context.destination);
+				analyNode.connect(G.context.destination);
 				//processor.connect(context.destination);
 				this.active=true;
 			}
@@ -157,6 +163,7 @@ var Debug = {
 		this.active = !this.active;
 		if(this.active){
 			$('#debug').show();
+			resizeCanvases();
 		} else {
 			$('#debug').hide();
 		}

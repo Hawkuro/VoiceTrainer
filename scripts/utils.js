@@ -108,6 +108,9 @@ function maxDiff(array,len)
 
 // Resizes all canvases and updates diff
 function resizeCanvases(){
+	var wf = Debug.wf;
+	var fft = Debug.fft;
+	var pit = Debug.pit;
 	//alert("resized!");
 	adjustCanvas(pit.canvas);
 	adjustCanvas(fft.canvas);
