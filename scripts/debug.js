@@ -1,5 +1,23 @@
 var Debug = {
+	// Canvases:
+	pit: undefined,
+	wf: undefined,
+	fft: undefined,
+
 	init: function(gainNode, oscNode, analyNode){
+		//Turn gain input into slider
+		$('#gain').slider({
+			formater: function(value) {
+				return Number(value);
+			}
+		});
+
+		// Make the render button in debug work.
+		$('#Render').bind("click", function(evt) {
+			G.render = !G.render;
+			//console.log(g_render);
+		});
+		
     	oscNode.loop=true;
     	oscNode.start(0);
 
@@ -10,19 +28,22 @@ var Debug = {
 		});
 
 		// Get some variables ready for the waveform-canvas
-		wf = initCanvas('render-waveform');
+		var wf = initCanvas('render-waveform');
+		this.wf = wf;
 		wf.l = SAMPLE_SIZE; // Number of x-coords in graph of data (The waveform)
 		wf.diff = wf.w/wf.l; // Difference in adjacent x-coords in graph of data,
 		                     // to avoid redundant calculations, changes seldom.
 
 		// Get some variables ready for fft-canvas
-		fft = initCanvas('render-fft');
+		var fft = initCanvas('render-fft');
+		this.fft = fft;
 		fft.l = wf.l/2;
 		fft.min = 1;
 		fft.max = 100;
 		fft.diff = fft.w/(fft.max - fft.min); // Same as wf.diff
 
-		pit = initCanvas('render-pitch');
+		var pit = initCanvas('render-pitch');
+		this.pit = pit;
 
 		$("#fftSpan").slider({max:fft.l-1, value: [1,SAMPLE_SIZE/32] });
 		$("#span-slider").bind('slide',function(evt){
@@ -31,9 +52,6 @@ var Debug = {
 			fft.max = value[1];
 			fft.diff = fft.w/(fft.max - fft.min+1);
 		});
-
-		fftAn = new FFT(SAMPLE_SIZE,SAMPLE_RATE); // Make FFT analyser, i.e. an object that uses FFT on
-												  // wavefrom arrays.
 
 		// Activate Osc./Mic. button
 		$("#Oscillator").bind("click", function(evt){
@@ -63,25 +81,27 @@ var Debug = {
 		});
 	},
 
-	renderWaveform: function(data){
+	renderWaveform: function(){
+		var wf = this.wf;
 
 		wf.ctx.clearRect(0,0,wf.w,wf.h);
 		wf.ctx.beginPath()
-		wf.ctx.moveTo(0,(data[0]+1)*wf.h/2)
+		wf.ctx.moveTo(0,(G.data[0]+1)*wf.h/2)
 		for(var j = 0; j < wf.l; j++){
-			wf.ctx.lineTo(j*wf.diff,(data[j]+1)*wf.h/2);
+			wf.ctx.lineTo(j*wf.diff,(G.data[j]+1)*wf.h/2);
 		}
 		wf.ctx.stroke();
 		// Render maxDiff text
 		wf.ctx.font="10px Georgia";
-		wf.ctx.fillText("maxDiff =" + maxDiff(data,wf.l),10,10);
+		wf.ctx.fillText("maxDiff =" + maxDiff(G.data,wf.l),10,10);
 	},
 
-	renderFFTandPitch: function(data, fftAn){//(analyser, fftAn){
+	renderFFTandPitch: function(){//(analyser, fftAn){
+		var fft = this.fft;
+		var pit = this.pit;
 
-		fftAn.forward(data);
-		var FFTSpec = fftAn.spectrum;
-		var top = findTop(fftAn, fft.min, fft.max);//(FFTSpec, fft.min, fft.max);
+		var FFTSpec = G.fftAn.spectrum;
+		var top = findTop(fft.min, fft.max);//(FFTSpec, fft.min, fft.max);
 
 		this.renderFFT(FFTSpec, fft, top, fft.diff);
 
@@ -100,6 +120,7 @@ var Debug = {
 	},
 
 	renderFFT: function(spectrum, canvasContainer, top, diff){
+		var fft = this.fft;
 		diff = diff || canvasContainer.w/(fft.max - fft.min+1);
 		canvasContainer.ctx.clearRect(0,0,canvasContainer.w,canvasContainer.h);
 		canvasContainer.ctx.font="10px Georgia";
@@ -123,5 +144,21 @@ var Debug = {
 		canvasContainer.ctx.lineTo((top-canvasContainer.min+0.5)*canvasContainer.diff,0);
 		canvasContainer.ctx.stroke();
 
+	},
+
+	render: function(){
+		this.renderWaveform();
+		this.renderFFTandPitch();
+	},
+
+	active: true,
+
+	toggle: function(){
+		this.active = !this.active;
+		if(this.active){
+			$('#debug').show();
+		} else {
+			$('#debug').hide();
+		}
 	}
 }

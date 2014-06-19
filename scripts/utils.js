@@ -39,8 +39,8 @@ function keyCode(keyChar) {
 // Tone utils
 //------------
 
-function findTop(FFTAnalyser, min, max){
-	var spectrum = FFTAnalyser.spectrum;
+function findTop(min, max){
+	var spectrum = G.fftAn.spectrum;
 	var maxInd = -1;
 	var maxVal = Number.MIN_VALUE;
 	for(var i = Math.max(0,min); i <= max && i < spectrum.length; i++){
@@ -51,15 +51,15 @@ function findTop(FFTAnalyser, min, max){
 		}
 	}
 
-	return findFreqIndex(FFTAnalyser, maxInd);
+	return findFreqIndex(maxInd);
 }
 
-function findFreqIndex(FFTAnalyser, index){
+function findFreqIndex(index){
 
 	// Quinn:
-	var real = FFTAnalyser.real;
+	var real = G.fftAn.real;
 	//console.log(real.length);
-	var imag = FFTAnalyser.imag;
+	var imag = G.fftAn.imag;
 
 	// Returns Real( fft[i]/fft[j] ) where fft is a hypothetical array of
 	// the complex results from the FFT

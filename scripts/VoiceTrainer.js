@@ -1,33 +1,14 @@
-var microphone;
-var wf; // Waveform canvas
-var fft; // FFT canvas
-var pit; // Pitch canvas
-var SAMPLE_SIZE = 4096; // MUST be power of 2
-var SAMPLE_RATE = 44100; // Not actually changeable :(
-var TWO_PI = 2*Math.PI; // DO NOT CHANGE
-var g_render = true;
-var fftAn;
-var KEY_D = keyCode('D');
-var debug = true;
-
-
 window.onload = function() {
-	//Turn gain input into slider
-	$('#gain').slider({
-		formater: function(value) {
-			return Number(value);
-		}
-	});
 
-	$('#Render').bind("click", function(evt) {
-		g_render = !g_render;
-		//console.log(g_render);
-	});
-
+	// Is your browser compatible? Probably not.
 	compatiCheck();
 
+	// Our new friend the Audio Context. This allows audio processing in pure JS. Wünderbar.
     var context = new AudioContext();
     SAMPLE_RATE = context.sampleRate;
+
+	G.fftAn = new FFT(SAMPLE_SIZE,SAMPLE_RATE); // Make FFT analyser, i.e. an object that uses FFT on
+												// wavefrom arrays.
 
 	function processStream(stream){
 
@@ -43,8 +24,11 @@ window.onload = function() {
     	// Create the gain node
 		var gain = context.createGain();
 
-		microphone = context.createMediaStreamSource(stream);
+		// Create the microphone node, notice thath it's Global, this is to circumvent a bug in FF :/
+		G.microphone = context.createMediaStreamSource(stream);
 
+		// Create the analyserNode, not currently in use, but seems to fix some bugs uin Chrome for Android
+		// for whatever reason.
 		var analyser = context.createAnalyser();
 		analyser.fftSize=SAMPLE_SIZE/2;
 
@@ -58,15 +42,16 @@ window.onload = function() {
 			var data = buff.getChannelData(0);
 			evt.outputBuffer.getChannelData(0).set(data);
 			window.requestAnimationFrame(function() {
-				if(g_render && debug){
-					Debug.renderWaveform(data);
-					Debug.renderFFTandPitch(data,fftAn);
+				G.data = data;
+				G.fftAn.forward(G.data);
+				if(G.render && Debug.active){
+					Debug.render();
 				} 
 			});
 		}
 
 		//Connect audio modules up
-		microphone.connect(gain);
+		G.microphone.connect(gain);
 		gain.connect(processor);
 		processor.connect(analyser);
 	}
@@ -77,12 +62,7 @@ window.onload = function() {
 
 window.addEventListener('resize', resizeCanvases, false); // Fix canvases upon resize, see utils.js
 window.addEventListener('keyup',function(evt){
-	if(evt.keyCode === KEY_D){
-		debug = !debug;
-		if(debug){
-			$('#debug').show();
-		} else {
-			$('#debug').hide();
-		}
+	if(evt.keyCode === Keys.D){
+		Debug.toggle();
 	};
 });
