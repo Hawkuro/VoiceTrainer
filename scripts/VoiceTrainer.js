@@ -4,8 +4,8 @@ window.onload = function() {
 	compatiCheck();
 
 	// Our new friend the Audio Context. This allows audio processing in pure JS. Wünderbar.
-	var context = new AudioContext();
-	SAMPLE_RATE = context.sampleRate;
+	G.context = new AudioContext();
+	SAMPLE_RATE = G.context.sampleRate;
 
 	G.fftAn = new FFT(SAMPLE_SIZE,SAMPLE_RATE); // Make FFT analyser, i.e. an object that uses FFT on
 												// wavefrom arrays.
@@ -16,26 +16,26 @@ window.onload = function() {
 		var osc = new Oscillator(DSP.SINE, 440, 1, SAMPLE_RATE*4, SAMPLE_RATE);
 		osc.generate();
 		var signal = osc.signal;
-		var oscBuff = context.createBuffer(1,osc.bufferSize,SAMPLE_RATE);
+		var oscBuff = G.context.createBuffer(1,osc.bufferSize,SAMPLE_RATE);
 		oscBuff.getChannelData(0).set(signal);
-		var oscNode = context.createBufferSource();
+		var oscNode = G.context.createBufferSource();
 		oscNode.buffer = oscBuff;
 
 		// Create the gain node
-		var gain = context.createGain();
+		var gain = G.context.createGain();
 
 		// Create the microphone node, notice thath it's Global, this is to circumvent a bug in FF :/
-		G.microphone = context.createMediaStreamSource(stream);
+		G.microphone = G.context.createMediaStreamSource(stream);
 
 		// Create the analyserNode, not currently in use, but seems to fix some bugs uin Chrome for Android
 		// for whatever reason.
-		var analyser = context.createAnalyser();
+		var analyser = G.context.createAnalyser();
 		analyser.fftSize=SAMPLE_SIZE/2;
 
 		Debug.init(gain, oscNode, analyser);
 
 		//Initialize the Processor node
-		var processor = context.createScriptProcessor(SAMPLE_SIZE,1,1) || context.createJavaScriptNode(SAMPLE_SIZE,1,1);
+		var processor = G.context.createScriptProcessor(SAMPLE_SIZE,1,1) || G.context.createJavaScriptNode(SAMPLE_SIZE,1,1);
 		if(!processor){alert("ScriptProcessorNode not supported");}
 		processor.onaudioprocess = function(evt){
 			var buff = evt.inputBuffer;
