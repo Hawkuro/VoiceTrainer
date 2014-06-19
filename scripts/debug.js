@@ -157,7 +157,7 @@ var Debug = {
 		this.renderFFTandPitch();
 	},
 
-	active: true,
+	active: false,
 
 	toggle: function(){
 		this.active = !this.active;
