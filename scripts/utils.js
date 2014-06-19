@@ -5,7 +5,7 @@
 // Returns true if the browser supports GetUserMedia, otherwise false
 function hasGetUserMedia() {
   	return !!(navigator.getUserMedia || navigator.webkitGetUserMedia ||
-              navigator.mozGetUserMedia || navigator.msGetUserMedia);
+	          navigator.mozGetUserMedia || navigator.msGetUserMedia);
 }
 
 // Checks if browser is compatible and renames necessary components
@@ -21,18 +21,18 @@ function compatiCheck() {
 	}
 
 	window.AudioContext = window.AudioContext ||
-                      window.webkitAudioContext;
-    if(window.AudioContext) {
-    	// Good to go, continue
-    } else {
-    	alert('browser does not support AudioContext');
-    	return;
-    }
+	                      window.webkitAudioContext;
+	if(window.AudioContext) {
+		// Good to go, continue
+	} else {
+		alert('browser does not support AudioContext');
+		return;
+	}
 }
 
 // A tiny little convenience function
 function keyCode(keyChar) {
-    return keyChar.charCodeAt(0);
+	return keyChar.charCodeAt(0);
 }
 
 //------------

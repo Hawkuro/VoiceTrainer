@@ -13,15 +13,15 @@ window.onload = function() {
 	function processStream(stream){
 
 		// Create the Oscillator and its node
-    	var osc = new Oscillator(DSP.SINE, 440, 1, SAMPLE_RATE*4, SAMPLE_RATE);
-    	osc.generate();
-    	var signal = osc.signal;
-    	var oscBuff = context.createBuffer(1,osc.bufferSize,SAMPLE_RATE);
-    	oscBuff.getChannelData(0).set(signal);
-    	var oscNode = context.createBufferSource();
-    	oscNode.buffer = oscBuff;
+		var osc = new Oscillator(DSP.SINE, 440, 1, SAMPLE_RATE*4, SAMPLE_RATE);
+		osc.generate();
+		var signal = osc.signal;
+		var oscBuff = context.createBuffer(1,osc.bufferSize,SAMPLE_RATE);
+		oscBuff.getChannelData(0).set(signal);
+		var oscNode = context.createBufferSource();
+		oscNode.buffer = oscBuff;
 
-    	// Create the gain node
+		// Create the gain node
 		var gain = context.createGain();
 
 		// Create the microphone node, notice thath it's Global, this is to circumvent a bug in FF :/
@@ -57,7 +57,7 @@ window.onload = function() {
 	}
 
 	// Get the party started by fetching the mic. input
-    navigator.getUserMedia({audio:true}, processStream, function(err){console.log(err);});
+	navigator.getUserMedia({audio:true}, processStream, function(err){console.log(err);});
 }
 
 window.addEventListener('resize', resizeCanvases, false); // Fix canvases upon resize, see utils.js

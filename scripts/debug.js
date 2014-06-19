@@ -17,9 +17,9 @@ var Debug = {
 			G.render = !G.render;
 			//console.log(g_render);
 		});
-		
-    	oscNode.loop=true;
-    	oscNode.start(0);
+
+		oscNode.loop=true;
+		oscNode.start(0);
 
 		gainNode.gain.value = 1;
 		$('#gain-slider').bind("slide",function(evt){
