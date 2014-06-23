@@ -169,5 +169,4 @@ Debug.renderFFT = function(spectrum, canvasContainer, top, diff){
 	canvasContainer.ctx.moveTo((top-G.fftMin+0.5)*canvasContainer.diff,canvasContainer.h);
 	canvasContainer.ctx.lineTo((top-G.fftMin+0.5)*canvasContainer.diff,0);
 	canvasContainer.ctx.stroke();
-
 }
