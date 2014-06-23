@@ -32,20 +32,24 @@ window.onload = function() {
 		var analyser = G.context.createAnalyser();
 		analyser.fftSize=SAMPLE_SIZE/2;
 
-		Debug.init(gain, oscNode, analyser);
+		// Create the processor node
+		var processor = G.context.createScriptProcessor(SAMPLE_SIZE,1,1) || G.context.createJavaScriptNode(SAMPLE_SIZE,1,1);
+
+		// Initialize modules
+		//Debug.firstInit(gain, oscNode, analyser);
+		ModeHandler.init(G.microphone, oscNode, gain, processor, analyser);
 
 		//Initialize the Processor node
-		var processor = G.context.createScriptProcessor(SAMPLE_SIZE,1,1) || G.context.createJavaScriptNode(SAMPLE_SIZE,1,1);
 		if(!processor){alert("ScriptProcessorNode not supported");}
 		processor.onaudioprocess = function(evt){
 			var buff = evt.inputBuffer;
 			var data = buff.getChannelData(0);
 			evt.outputBuffer.getChannelData(0).set(data);
 			window.requestAnimationFrame(function() {
-				G.data = data;
-				G.fftAn.forward(G.data);
-				if(G.render && Debug.active){
-					Debug.render();
+				G.update(data);
+				ModeHandler.update();
+				if(G.render){
+					ModeHandler.render();
 				} 
 			});
 		}
@@ -60,9 +64,9 @@ window.onload = function() {
 	navigator.getUserMedia({audio:true}, processStream, function(err){console.log(err);});
 }
 
-window.addEventListener('resize', resizeCanvases, false); // Fix canvases upon resize, see utils.js
+window.addEventListener('resize', ModeHandler.resizeCanvases, false); // Fix canvases upon resize, see utils.js
 window.addEventListener('keyup',function(evt){
 	if(evt.keyCode === Keys.D){
-		Debug.toggle();
+		ModeHandler.toggle("debug");
 	};
 });

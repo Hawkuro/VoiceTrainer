@@ -35,6 +35,13 @@ function keyCode(keyChar) {
 	return keyChar.charCodeAt(0);
 }
 
+function getSelector(item){
+	var element = item.element || item;
+	return $("#" + element);
+}
+
+function emptyFunc(){}
+
 //------------
 // Tone utils
 //------------
@@ -105,25 +112,6 @@ function maxDiff(array,len)
 //--------------
 // Canvas utils
 //--------------
-
-// Resizes all canvases and updates diff
-function resizeCanvases(){
-	var wf = Debug.wf;
-	var fft = Debug.fft;
-	var pit = Debug.pit;
-	//alert("resized!");
-	adjustCanvas(pit.canvas);
-	adjustCanvas(fft.canvas);
-	adjustCanvas(wf.canvas);
-	wf.w = wf.canvas.width;
-	wf.h = wf.canvas.height;
-	fft.w = fft.canvas.width;
-	fft.h = fft.canvas.height;
-	pit.w = pit.canvas.width;
-	pit.h = pit.canvas.height;
-	fft.diff = fft.w/(fft.max - fft.min+1);
-	wf.diff = wf.w/wf.l;
-}
 
 function adjustCanvas(canvas)
 {
