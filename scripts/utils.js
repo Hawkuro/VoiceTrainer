@@ -61,6 +61,49 @@ function findTop(min, max){
 	return findFreqIndex(maxInd);
 }
 
+function findTops(min, max){
+	var spectrum = G.fftAn.spectrum;
+	var maxInds = new Array(NUM_TOPS);
+	var maxVals = new Array(NUM_TOPS);
+	for(var i = 0; i < NUM_TOPS; i++){
+		maxInds[i] = -1;
+		maxVals[i] = Number.MIN_VALUE;
+	}
+	for(var i = Math.max(0,min); i <= max && i < spectrum.length; i++){
+		for(var j = 0; j < NUM_TOPS; j++){
+			if(maxVals[j] >= spectrum[i]){
+				break;
+			} else {
+				maxVals[j-1] = maxVals[j];
+				maxInds[j-1] = maxInds[j];
+				maxVals[j] = spectrum[i];
+				maxInds[j] = findFreqIndex(i);
+			}
+		}
+	}
+
+	return maxInds;
+}
+
+function closestTop(target, tops){
+	var targetPitch = target.getNotePitch();
+	var minDiff = Number.MAX_VALUE;
+	var choice;
+	for(var i = 0; i < NUM_TOPS; i++){
+		var diff = Math.abs( targetPitch - NoteHandler.getFromFreq(toFreq(tops[i])).getNotePitch() );
+		if(diff < minDiff){
+			minDiff = diff;
+			choice = i;
+		}
+	}
+
+	return tops[choice];
+}
+
+function toFreq(index){
+	return index*SAMPLE_RATE/SAMPLE_SIZE;
+}
+
 function findFreqIndex(index){
 
 	// Quinn:

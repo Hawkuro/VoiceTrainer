@@ -130,7 +130,7 @@ Debug.renderFFTandPitch = function(){//(analyser, fftAn){
 
 	var FFTSpec = G.fftAn.spectrum;
 
-	this.renderFFT(FFTSpec, fft, G.top, fft.diff);
+	this.renderFFT(FFTSpec, fft, G.top, fft.diff, G.tops);
 
 	// render pitch
 	pit.ctx.clearRect(0,0,pit.w,pit.h);
@@ -145,7 +145,7 @@ Debug.renderFFTandPitch = function(){//(analyser, fftAn){
 
 }
 
-Debug.renderFFT = function(spectrum, canvasContainer, top, diff){
+Debug.renderFFT = function(spectrum, canvasContainer, top, diff, tops){
 	var fft = this.fft;
 	diff = diff || canvasContainer.w/(G.fftMax - G.fftMin+1);
 	canvasContainer.ctx.clearRect(0,0,canvasContainer.w,canvasContainer.h);
@@ -163,6 +163,20 @@ Debug.renderFFT = function(spectrum, canvasContainer, top, diff){
 
 	canvasContainer.ctx.font="10px Georgia";
 	canvasContainer.ctx.fillText("FFT",100,10);
+
+	for(var i = 0; i < NUM_TOPS; i++){
+		canvasContainer.ctx.beginPath();
+		canvasContainer.ctx.strokeStyle = "#000000";
+		canvasContainer.ctx.moveTo((tops[i] - G.fftMin + 0.5)*canvasContainer.diff, canvasContainer.h);
+		canvasContainer.ctx.lineTo((tops[i] - G.fftMin + 0.5)*canvasContainer.diff,0);
+		canvasContainer.ctx.stroke();
+	}
+
+	canvasContainer.ctx.beginPath();
+	canvasContainer.ctx.strokeStyle = "#00ff00";
+	canvasContainer.ctx.moveTo((G.target.getFreq()/SAMPLE_RATE*SAMPLE_SIZE - G.fftMin + 0.5)*canvasContainer.diff, canvasContainer.h);
+	canvasContainer.ctx.lineTo((G.target.getFreq()/SAMPLE_RATE*SAMPLE_SIZE - G.fftMin + 0.5)*canvasContainer.diff,0);
+	canvasContainer.ctx.stroke();
 
 	canvasContainer.ctx.beginPath();
 	canvasContainer.ctx.strokeStyle = '#ff0000';
