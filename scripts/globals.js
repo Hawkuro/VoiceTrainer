@@ -15,7 +15,7 @@ var Globals = {
 	target: NoteHandler.getFromNoteName("A","4"),
 	freq: undefined,
 	fftMin: 1,
-	fftMax: SAMPLE_SIZE/32,
+	fftMax: SAMPLE_SIZE/16,
 
 	update: function(data){
 		G.data = data;
