@@ -63,19 +63,24 @@ function findTop(min, max){
 
 function findTops(min, max){
 	var spectrum = G.fftAn.spectrum;
-	var maxInds = new Array(NUM_TOPS);
+	var maxInds = new Float32Array(NUM_TOPS);
 	var maxVals = new Array(NUM_TOPS);
 	for(var i = 0; i < NUM_TOPS; i++){
 		maxInds[i] = -1;
 		maxVals[i] = Number.MIN_VALUE;
 	}
 	for(var i = Math.max(0,min); i <= max && i < spectrum.length; i++){
+		if(spectrum[i-1] > spectrum[i] || spectrum[i+1] > spectrum[i]){
+			continue;
+		}
 		for(var j = 0; j < NUM_TOPS; j++){
 			if(maxVals[j] >= spectrum[i]){
 				break;
 			} else {
-				maxVals[j-1] = maxVals[j];
-				maxInds[j-1] = maxInds[j];
+				if(j > 0){
+					maxVals[j-1] = maxVals[j];
+					maxInds[j-1] = maxInds[j];
+				}
 				maxVals[j] = spectrum[i];
 				maxInds[j] = findFreqIndex(i);
 			}
