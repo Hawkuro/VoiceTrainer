@@ -152,11 +152,12 @@ Debug.renderFFT = function(spectrum, canvasContainer, top, diff, tops){
 	canvasContainer.ctx.font="10px Georgia";
 	canvasContainer.ctx.textAlign="center";
 	canvasContainer.ctx.beginPath();
+	var legendLength = Math.floor((G.fftMax - G.fftMin)/10);
 	for(var i = Math.max(G.fftMin,0); i <= G.fftMax && i < canvasContainer.l; i++){
 		h = spectrum[i];
 		canvasContainer.ctx.rect((i-G.fftMin)*fft.diff, canvasContainer.h/2*(1-h) ,fft.diff, h*canvasContainer.h/2);
-		if(i%10===0){
-			canvasContainer.ctx.fillText(i, (i-G.fftMin)*fft.diff, canvasContainer.h/2 + 20)
+		if(i%legendLength===0){
+			canvasContainer.ctx.fillText(Math.round(toFreq(i)), (i-G.fftMin)*fft.diff, canvasContainer.h/2 + 20)
 		}
 	}
 	canvasContainer.ctx.fill();
@@ -164,23 +165,19 @@ Debug.renderFFT = function(spectrum, canvasContainer, top, diff, tops){
 	canvasContainer.ctx.font="10px Georgia";
 	canvasContainer.ctx.fillText("FFT",100,10);
 
-	for(var i = 0; i < NUM_TOPS; i++){
+	function drawTopLine(ind, color){
 		canvasContainer.ctx.beginPath();
-		canvasContainer.ctx.strokeStyle = "#000000";
-		canvasContainer.ctx.moveTo((tops[i] - G.fftMin + 0.5)*canvasContainer.diff, canvasContainer.h);
-		canvasContainer.ctx.lineTo((tops[i] - G.fftMin + 0.5)*canvasContainer.diff,0);
+		canvasContainer.ctx.strokeStyle = color;
+		canvasContainer.ctx.moveTo((ind - G.fftMin + 0.5)*canvasContainer.diff, canvasContainer.h);
+		canvasContainer.ctx.lineTo((ind - G.fftMin + 0.5)*canvasContainer.diff,0);
 		canvasContainer.ctx.stroke();
 	}
 
-	canvasContainer.ctx.beginPath();
-	canvasContainer.ctx.strokeStyle = "#00ff00";
-	canvasContainer.ctx.moveTo((G.target.getFreq()/SAMPLE_RATE*SAMPLE_SIZE - G.fftMin + 0.5)*canvasContainer.diff, canvasContainer.h);
-	canvasContainer.ctx.lineTo((G.target.getFreq()/SAMPLE_RATE*SAMPLE_SIZE - G.fftMin + 0.5)*canvasContainer.diff,0);
-	canvasContainer.ctx.stroke();
+	for(var i = 0; i < NUM_TOPS; i++){
+		drawTopLine(tops[i],"#000000");
+	}
 
-	canvasContainer.ctx.beginPath();
-	canvasContainer.ctx.strokeStyle = '#ff0000';
-	canvasContainer.ctx.moveTo((top-G.fftMin+0.5)*canvasContainer.diff,canvasContainer.h);
-	canvasContainer.ctx.lineTo((top-G.fftMin+0.5)*canvasContainer.diff,0);
-	canvasContainer.ctx.stroke();
+	drawTopLine(G.target.getFreq()/SAMPLE_RATE*SAMPLE_SIZE, "#00ff00");
+
+	drawTopLine(top, "#ff0000");
 }
