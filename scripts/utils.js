@@ -180,6 +180,11 @@ function initCanvas(canvasName)
 	};
 }
 
+function plotLine(ctx, fromX, fromY, toX, toY){
+	ctx.moveTo(fromX,fromY);
+	ctx.lineTo(toX,toY);
+}
+
 //----------------------
 // Circular buffer tool 
 //----------------------

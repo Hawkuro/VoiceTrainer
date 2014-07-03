@@ -33,9 +33,12 @@ var PianoRoll = new Mode({
 });
 
 PianoRoll.readyCanvas = function(ctx){
+	var baseHeight = this.canv.h/2 - 5.5*this.lineDiff;
 	ctx.beginPath();
-	ctx.moveTo(0, 250);
-	ctx.lineTo(this.canv.w, 250);
+	for(var i = 0; i < 12; i++){
+		var h = baseHeight + i*this.lineDiff;
+		plotLine(ctx, 0, h, this.canv.w, h);
+	}
 	ctx.stroke();
 };
 
@@ -44,7 +47,7 @@ PianoRoll.drawBuffer = function(ctx){
 	ctx.save();
 	ctx.strokeStyle = "blue";
 	ctx.beginPath();
-	ctx.moveTo(0, this.canv.h/2 - (this.pitchBuffer.get(0) - this.toneOffset)*this.lineDiff);
+	ctx.moveTo(0, this.canv.h/2 - this.pitchBuffer.get(0));
 	var i;
 	for(i = 1; i < this.pitchBuffer.len; i++){	
 		if(!isNaN(this.pitchBuffer.get(i))){
