@@ -12,7 +12,7 @@ var Globals = {
 	note: undefined,
 	top: undefined,
 	tops: undefined,
-	target: NoteHandler.getFromNoteName("A","4"),
+	target: NoteHandler.getFromNoteName("A","4"), // Only PianoRoll may change
 	freq: undefined,
 	fftMin: 1,
 	fftMax: SAMPLE_SIZE/16,

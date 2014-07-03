@@ -53,6 +53,8 @@ window.onload = function() {
 				} 
 			});
 		}
+		window.addEventListener('resize', ModeHandler.resizeCanvases, false); // Fix canvases upon resize, see utils.js
+
 
 		//Connect audio modules up
 		G.microphone.connect(gain);
@@ -64,7 +66,6 @@ window.onload = function() {
 	navigator.getUserMedia({audio:true}, processStream, function(err){console.log(err);});
 }
 
-window.addEventListener('resize', ModeHandler.resizeCanvases, false); // Fix canvases upon resize, see utils.js
 window.addEventListener('keyup',function(evt){
 	if(evt.keyCode === Keys.D){
 		ModeHandler.toggle("debug");

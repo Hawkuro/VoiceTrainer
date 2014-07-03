@@ -27,6 +27,7 @@
 		<script type="text/javascript" src="scripts/NoteConverter.js"></script>
 		<script type="text/javascript" src="scripts/utils.js"></script>
 		<script type="text/javascript" src="scripts/Mode.js"></script>
+		<script type="text/javascript" src="scripts/PianoRoll.js"></script>
 		<script type="text/javascript" src="scripts/debug.js"></script>
 		<script type="text/javascript" src="scripts/ModeHandler.js"></script>
 		<script type="text/javascript" src="scripts/globals.js"></script>
@@ -67,6 +68,14 @@
 			</div>
 		</nav>
 		<div class="container" role="main">
+			<!-- Piano roll module -->
+			<div class="container row module" id="pianoRoll">
+				<div class="well row" id="pianoRollOutput">
+					<div class="container col-lg-12">
+						<canvas id="render-pianoRoll"></canvas>
+					</div>
+				</div>
+			</div>
 			<!-- Debug module -->
 			<div class="container row module" id="debug">
 				<div class="container row">

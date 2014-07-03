@@ -179,3 +179,26 @@ function initCanvas(canvasName)
 		h: canvas.height
 	};
 }
+
+//----------------------
+// Circular buffer tool 
+//----------------------
+
+function circularBuffer(size){
+	this.buffer = new Float32Array(size);
+	for(var i = 0; i < size; i++){
+		this.buffer[i] = NaN;
+	}
+	this.n = 0;
+	this.len = size;
+}
+
+circularBuffer.prototype.add = function(item){
+	this.buffer[this.n] = item;
+	this.n = (this.n + 1) % this.len;
+}
+
+circularBuffer.prototype.get = function(index){
+	var n = isNaN(this.buffer[this.n]) ? 0 : this.n;
+	return this.buffer[(n + index) % this.len];
+}

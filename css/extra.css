@@ -5,6 +5,13 @@
 	background-color: #FAFAFA;
 }
 
+#render-pianoRoll
+{
+	width:100%;
+	height:512px;
+	background-color: #FAFAFA
+}
+
 #gain-slider .slider-selection, #span-slider .slider-selection {
 	background: #00AAFF;
 }

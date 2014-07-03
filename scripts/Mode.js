@@ -11,9 +11,9 @@ function Mode(props){
 
 Mode.prototype.activate = function(){
 	this.active = true;
-	this.init();
 	getSelector(this).show();
 	this.resizeCanvases();
+	this.init();
 }
 
 Mode.prototype.deactivate = function(){

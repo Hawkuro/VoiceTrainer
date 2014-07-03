@@ -1,16 +1,16 @@
 var ModeHandler = {
 	modes: { //Constant
 		debug: Debug,
+		pianoRoll: PianoRoll
 	},
 
-	activeModes: [Debug],
+	activeModes: [Debug, PianoRoll],
 
 	init: function(mic, osc, gain, proc, analy){
 		var that = this;
 		for(var modeName in this.modes){
 			that.modes[modeName].firstInit(mic, osc, gain, proc, analy);
 		}
-
 		this._activate(this.activeModes, false);
 	},
 
