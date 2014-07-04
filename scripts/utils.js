@@ -208,5 +208,6 @@ circularBuffer.prototype.add = function(item){
 
 circularBuffer.prototype.get = function(index){
 	var n = !this.full ? 0 : this.n;
-	return this.buffer[(n + index + this.len) % this.len];
+	var end = !this.full ? this.n : this.len;
+	return this.buffer[(n + index + end) % end];
 }

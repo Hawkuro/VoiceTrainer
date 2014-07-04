@@ -6,10 +6,11 @@ var PianoRoll = new Mode({
 
 	init: function(){
 		//console.log(this.canv.w - this.frameOffset);
-		this.frameOffset = Math.floor(this.canv.w*0.4);
-		this.pitchBuffer = new circularBuffer(this.canv.w - this.frameOffset);
-		this.timeBuffer = new circularBuffer(this.canv.w - this.frameOffset);
+		this.frameOffset = Math.floor(this.canv.w*0.6);
+		this.pitchBuffer = new circularBuffer(this.frameOffset+100);
+		this.timeBuffer = new circularBuffer(this.frameOffset+100);
 		this.drawFromRight = false;
+		this.startTime = Date.now()*this.timeScaler;
 	},
 
 	element: "pianoRoll",
@@ -25,7 +26,7 @@ var PianoRoll = new Mode({
 		this.edgeTime = this.timeBuffer.full ? this.timeBuffer.get(-1) : this.timeBuffer.get(0);
 		this.pitchBuffer.add((NoteHandler.getFromFreq(toFreq(G.top)).getNotePitch() - this.toneOffset)*this.lineDiff);
 		//console.log(NoteHandler.getFromFreq(toFreq(G.top)).getNotePitch());
-		if(!this.drawFromRight && this.pitchBuffer.full){
+		if(!this.drawFromRight && this.timeBuffer.get(-1) - this.startTime >= this.frameOffset){
 			this.drawFromRight = true;
 		}
 	},
@@ -37,7 +38,7 @@ var PianoRoll = new Mode({
 		this.readyCanvas(ctx);
 
 		if(this.drawFromRight){
-			this.drawBufferFromRight(ctx);
+			this.translateAndDrawBuffer(ctx);
 		} else {
 			this.drawBufferFromLeft(ctx);
 		}
@@ -58,13 +59,20 @@ PianoRoll.drawBufferFromRight = function(ctx){
 	ctx.save();
 	ctx.strokeStyle = "blue";
 	ctx.beginPath();
-	ctx.moveTo(this.canv.w - this.frameOffset, this.canv.h/2 - this.pitchBuffer.get(-1));
-	var xOffset = this.canv.w - this.frameOffset - this.edgeTime;
+	ctx.moveTo(this.frameOffset, this.canv.h/2 - this.pitchBuffer.get(-1));
+	var xOffset = this.frameOffset - this.startTime;
 	var yOffset = this.canv.h/2;
 	for(var i = 1; i < this.pitchBuffer.len; i++){
 		ctx.lineTo(xOffset + this.timeBuffer.get(-i-1), yOffset - this.pitchBuffer.get(-i-1));
 	}
 	ctx.stroke();
+	ctx.restore();
+};
+
+PianoRoll.translateAndDrawBuffer = function(ctx){
+	ctx.save();
+	ctx.translate(this.startTime + this.frameOffset - this.timeBuffer.get(-1),0);
+	this.drawBufferFromLeft(ctx);
 	ctx.restore();
 };
 
@@ -77,7 +85,7 @@ PianoRoll.drawBufferFromLeft = function(ctx){
 	for(var i = 1; i < this.pitchBuffer.len; i++){	
 		if(!isNaN(this.pitchBuffer.get(i))){
 			//Do stuff
-			ctx.lineTo(this.timeBuffer.get(i) - this.edgeTime, this.canv.h/2 - this.pitchBuffer.get(i));
+			ctx.lineTo(this.timeBuffer.get(i) - this.startTime, this.canv.h/2 - this.pitchBuffer.get(i));
 			//console.log(i);
 			//console.log((this.canv.h - this.buffer.get(i))*this.lineDiff)
 			//console.log(this.timeBuffer.get(i));
