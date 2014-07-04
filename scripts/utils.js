@@ -190,20 +190,23 @@ function plotLine(ctx, fromX, fromY, toX, toY){
 //----------------------
 
 function circularBuffer(size){
-	this.buffer = new Float32Array(size);
+	this.buffer = new Float64Array(size);
 	for(var i = 0; i < size; i++){
 		this.buffer[i] = NaN;
 	}
 	this.n = 0;
 	this.len = size;
+	this.full = false;
 }
 
 circularBuffer.prototype.add = function(item){
 	this.buffer[this.n] = item;
 	this.n = (this.n + 1) % this.len;
+	if(this.n){return;} // if n is zero at this point, it's gone full circle and is full
+	this.full = true;
 }
 
 circularBuffer.prototype.get = function(index){
-	var n = isNaN(this.buffer[this.n]) ? 0 : this.n;
-	return this.buffer[(n + index) % this.len];
+	var n = !this.full ? 0 : this.n;
+	return this.buffer[(n + index + this.len) % this.len];
 }
