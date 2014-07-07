@@ -9,7 +9,7 @@ var PianoRoll = new Mode({
 		this.frameOffset = Math.floor(this.canv.w*0.6);
 		this.pitchBuffer = new circularBuffer(this.frameOffset+100);
 		this.timeBuffer = new circularBuffer(this.frameOffset+100);
-		this.drawFromRight = false;
+		this.translate = false;
 		this.startTime = Date.now()*this.timeScaler;
 	},
 
@@ -22,13 +22,15 @@ var PianoRoll = new Mode({
 	},
 
 	update: function(){
-		this.timeBuffer.add(Date.now()*this.timeScaler);
+		this.timeBuffer.add(Date.now()*this.timeScaler - this.startTime);
 		this.edgeTime = this.timeBuffer.full ? this.timeBuffer.get(-1) : this.timeBuffer.get(0);
 		this.pitchBuffer.add((NoteHandler.getFromFreq(toFreq(G.top)).getNotePitch() - this.toneOffset)*this.lineDiff);
 		//console.log(NoteHandler.getFromFreq(toFreq(G.top)).getNotePitch());
-		if(!this.drawFromRight && this.timeBuffer.get(-1) - this.startTime >= this.frameOffset){
-			this.drawFromRight = true;
+		if(!this.translate && this.timeBuffer.get(-1) >= this.frameOffset){
+			this.translate = true;
 		}
+
+		this.cameraOffset = this.translate ? this.frameOffset - this.timeBuffer.get(-1) : 0;
 	},
 
 	render: function(){
@@ -37,11 +39,7 @@ var PianoRoll = new Mode({
 		ctx.clearRect(0,0,this.canv.w,this.canv.h);
 		this.readyCanvas(ctx);
 
-		if(this.drawFromRight){
-			this.translateAndDrawBuffer(ctx);
-		} else {
-			this.drawBufferFromLeft(ctx);
-		}
+		this.translateAndDrawBuffer(ctx);
 	}
 });
 
@@ -55,46 +53,22 @@ PianoRoll.readyCanvas = function(ctx){
 	ctx.stroke();
 };
 
-PianoRoll.drawBufferFromRight = function(ctx){
-	ctx.save();
-	ctx.strokeStyle = "blue";
-	ctx.beginPath();
-	ctx.moveTo(this.frameOffset, this.canv.h/2 - this.pitchBuffer.get(-1));
-	var xOffset = this.frameOffset - this.startTime;
-	var yOffset = this.canv.h/2;
-	for(var i = 1; i < this.pitchBuffer.len; i++){
-		ctx.lineTo(xOffset + this.timeBuffer.get(-i-1), yOffset - this.pitchBuffer.get(-i-1));
-	}
-	ctx.stroke();
-	ctx.restore();
-};
-
 PianoRoll.translateAndDrawBuffer = function(ctx){
 	ctx.save();
-	ctx.translate(this.startTime + this.frameOffset - this.timeBuffer.get(-1),0);
+	ctx.translate(this.cameraOffset,0);
 	this.drawBufferFromLeft(ctx);
 	ctx.restore();
 };
 
 PianoRoll.drawBufferFromLeft = function(ctx){
 	//console.log("here");
-	ctx.save();
 	ctx.strokeStyle = "blue";
 	ctx.beginPath();
-	ctx.moveTo(0, this.canv.h/2 - this.pitchBuffer.get(0));
-	for(var i = 1; i < this.pitchBuffer.len; i++){	
-		if(!isNaN(this.pitchBuffer.get(i))){
-			//Do stuff
-			ctx.lineTo(this.timeBuffer.get(i) - this.startTime, this.canv.h/2 - this.pitchBuffer.get(i));
-			//console.log(i);
-			//console.log((this.canv.h - this.buffer.get(i))*this.lineDiff)
-			//console.log(this.timeBuffer.get(i));
-		} else {
-			break;
-		}
+	ctx.moveTo(this.timeBuffer.get(0), this.canv.h/2 - this.pitchBuffer.get(0));
+	for(var i = 1; i < this.pitchBuffer.getEnd(); i++){
+		ctx.lineTo(this.timeBuffer.get(i), this.canv.h/2 - this.pitchBuffer.get(i));
 	}
 	ctx.stroke();
-	ctx.restore();
 };
 
 PianoRoll.pitchBuffer = undefined;
