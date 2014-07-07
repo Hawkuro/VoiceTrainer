@@ -6,7 +6,7 @@ var PianoRoll = new Mode({
 
 	init: function(){
 		//console.log(this.canv.w - this.frameOffset);
-		this.frameOffset = Math.floor(this.canv.w*0.6);
+		this.frameOffset = Math.floor(this.canv.w*0.1);
 		this.pitchBuffer = new circularBuffer(this.frameOffset+100);
 		this.timeBuffer = new circularBuffer(this.frameOffset+100);
 		this.translate = false;
@@ -23,10 +23,12 @@ var PianoRoll = new Mode({
 
 	update: function(){
 		this.timeBuffer.add(Date.now()*this.timeScaler - this.startTime);
-		this.edgeTime = this.timeBuffer.full ? this.timeBuffer.get(-1) : this.timeBuffer.get(0);
 		this.pitchBuffer.add((NoteHandler.getFromFreq(toFreq(G.top)).getNotePitch() - this.toneOffset)*this.lineDiff);
 		//console.log(NoteHandler.getFromFreq(toFreq(G.top)).getNotePitch());
-		if(!this.translate && this.timeBuffer.get(-1) >= this.frameOffset){
+		if(this.translate || !(this.timeBuffer.get(-1) >= this.frameOffset)){
+			// Do nothing, slightly faster to go into the positive more often than not
+			// which it does every time except once
+		} else {
 			this.translate = true;
 		}
 
@@ -37,13 +39,17 @@ var PianoRoll = new Mode({
 		var ctx = this.canv.ctx;
 
 		ctx.clearRect(0,0,this.canv.w,this.canv.h);
-		this.readyCanvas(ctx);
+		this.drawLines(ctx);
 
-		this.translateAndDrawBuffer(ctx);
+		this.panCam(ctx);
+
+		this.drawBuffer(ctx);
+
+		ctx.restore();
 	}
 });
 
-PianoRoll.readyCanvas = function(ctx){
+PianoRoll.drawLines = function(ctx){
 	var baseHeight = this.canv.h/2 - 5.5*this.lineDiff;
 	ctx.beginPath();
 	for(var i = 0; i < 12; i++){
@@ -53,14 +59,12 @@ PianoRoll.readyCanvas = function(ctx){
 	ctx.stroke();
 };
 
-PianoRoll.translateAndDrawBuffer = function(ctx){
+PianoRoll.panCam = function(ctx){
 	ctx.save();
 	ctx.translate(this.cameraOffset,0);
-	this.drawBufferFromLeft(ctx);
-	ctx.restore();
 };
 
-PianoRoll.drawBufferFromLeft = function(ctx){
+PianoRoll.drawBuffer = function(ctx){
 	//console.log("here");
 	ctx.strokeStyle = "blue";
 	ctx.beginPath();
@@ -73,10 +77,10 @@ PianoRoll.drawBufferFromLeft = function(ctx){
 
 PianoRoll.pitchBuffer = undefined;
 PianoRoll.timeBuffer = undefined;
-PianoRoll.edgeTime = undefined;
+PianoRoll.startTime = undefined;
 PianoRoll.canv = undefined;
 PianoRoll.lineDiff = 16;
 PianoRoll.toneOffset = 57;
 PianoRoll.frameOffset = 50;
 PianoRoll.timeScaler = undefined;
-PianoRoll.drawFromRight = false;
+PianoRoll.translate = false;
