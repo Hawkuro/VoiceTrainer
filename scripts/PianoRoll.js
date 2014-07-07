@@ -7,10 +7,6 @@ var PianoRoll = new Mode({
 	init: function(){
 		//console.log(this.canv.w - this.frameOffset);
 		this.frameOffset = Math.floor(this.canv.w*0.1);
-		this.pitchBuffer = new circularBuffer(this.frameOffset+100);
-		this.timeBuffer = new circularBuffer(this.frameOffset+100);
-		this.translate = false;
-		this.startTime = Date.now()*this.timeScaler;
 	},
 
 	element: "pianoRoll",
@@ -22,17 +18,21 @@ var PianoRoll = new Mode({
 	},
 
 	update: function(){
-		this.timeBuffer.add(Date.now()*this.timeScaler - this.startTime);
-		this.pitchBuffer.add((NoteHandler.getFromFreq(toFreq(G.top)).getNotePitch() - this.toneOffset)*this.lineDiff);
-		//console.log(NoteHandler.getFromFreq(toFreq(G.top)).getNotePitch());
-		if(this.translate || !(this.timeBuffer.get(-1) >= this.frameOffset)){
-			// Do nothing, slightly faster to go into the positive more often than not
-			// which it does every time except once
-		} else {
-			this.translate = true;
-		}
+		if(this.started){
+			this.timeBuffer.add(Date.now()*this.timeScaler - this.startTime);
+			this.pitchBuffer.add((NoteHandler.getFromFreq(toFreq(G.top)).getNotePitch() - this.toneOffset)*this.lineDiff);
+			//console.log(NoteHandler.getFromFreq(toFreq(G.top)).getNotePitch());
+			if(this.translate || !(this.timeBuffer.get(-1) >= this.frameOffset)){
+				// Do nothing, slightly faster to go into the positive more often than not
+				// which it does every time except once
+			} else {
+				this.translate = true;
+			}
 
-		this.cameraOffset = this.translate ? this.frameOffset - this.timeBuffer.get(-1) : 0;
+			this.cameraOffset = this.translate ? this.frameOffset - this.timeBuffer.get(-1) : 0;
+		} else /* if some check is fulfilled */ {
+			this.start();
+		}
 	},
 
 	render: function(){
@@ -48,6 +48,18 @@ var PianoRoll = new Mode({
 		ctx.restore();
 	}
 });
+
+PianoRoll.start = function(){
+	this.started = true;
+	this.pitchBuffer = new circularBuffer(this.frameOffset+100);
+	this.timeBuffer = new circularBuffer(this.frameOffset+100);
+	this.translate = false;
+	this.startTime = Date.now()*this.timeScaler;
+}
+
+PianoRoll.stop = function(){
+	this.started = false;
+}
 
 PianoRoll.drawLines = function(ctx){
 	var baseHeight = this.canv.h/2 - 5.5*this.lineDiff;
@@ -84,3 +96,4 @@ PianoRoll.toneOffset = 57;
 PianoRoll.frameOffset = 50;
 PianoRoll.timeScaler = undefined;
 PianoRoll.translate = false;
+PianoRoll.started = false;
