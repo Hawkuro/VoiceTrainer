@@ -19,7 +19,8 @@ var PianoRoll = new Mode({
 
 	update: function(){
 		if(this.started){
-			this.timeBuffer.add(Date.now()*this.timeScaler - this.startTime);
+			var currTime = Date.now()*this.timeScaler - this.startTime; // Time from start
+			this.timeBuffer.add(currTime);
 			this.pitchBuffer.add((NoteHandler.getFromFreq(toFreq(G.top)).getNotePitch() - this.toneOffset)*this.lineDiff);
 			//console.log(NoteHandler.getFromFreq(toFreq(G.top)).getNotePitch());
 			if(this.translate || !(this.timeBuffer.get(-1) >= this.frameOffset)){
@@ -30,7 +31,7 @@ var PianoRoll = new Mode({
 			}
 
 			this.cameraOffset = this.translate ? this.frameOffset - this.timeBuffer.get(-1) : 0;
-		} else /* if some check is fulfilled */ {
+		} else if(this.shouldStart()) {
 			this.start();
 		}
 	},
@@ -43,23 +44,32 @@ var PianoRoll = new Mode({
 
 		this.panCam(ctx);
 
-		this.drawBuffer(ctx);
+		if(this.started || this.stopped){
+			this.drawBuffer(ctx);
+		}
 
 		ctx.restore();
 	}
 });
 
+PianoRoll.shouldStart = function(){
+	var i = Math.floor(G.top);
+	return Math.max(G.fftAn.spectrum[i], G.fftAn.spectrum[i+1]) > PIANO_ROLL_START_THRESHHOLD;
+};
+
 PianoRoll.start = function(){
+	this.stopped = false;
 	this.started = true;
 	this.pitchBuffer = new circularBuffer(this.frameOffset+100);
 	this.timeBuffer = new circularBuffer(this.frameOffset+100);
 	this.translate = false;
 	this.startTime = Date.now()*this.timeScaler;
-}
+};
 
 PianoRoll.stop = function(){
 	this.started = false;
-}
+	this.stopped = true;
+};
 
 PianoRoll.drawLines = function(ctx){
 	var baseHeight = this.canv.h/2 - 5.5*this.lineDiff;
@@ -97,3 +107,4 @@ PianoRoll.frameOffset = 50;
 PianoRoll.timeScaler = undefined;
 PianoRoll.translate = false;
 PianoRoll.started = false;
+PianoRoll.stopped = false;
