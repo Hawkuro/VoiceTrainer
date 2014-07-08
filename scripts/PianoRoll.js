@@ -15,6 +15,9 @@ var PianoRoll = new Mode({
 		adjustCanvas(this.canv.canvas);
 		this.canv.h = this.canv.canvas.height;
 		this.canv.w = this.canv.canvas.width;
+		if(this.started){
+			this.resizeBuffers(this.canv.w + 100);
+		}
 	},
 
 	update: function(){
@@ -96,6 +99,11 @@ PianoRoll.drawBuffer = function(ctx){
 	}
 	ctx.stroke();
 };
+
+PianoRoll.resizeBuffers = function(newSize){
+	this.timeBuffer.resize(newSize);
+	this.pitchBuffer.resize(newSize);
+}
 
 PianoRoll.pitchBuffer = undefined;
 PianoRoll.timeBuffer = undefined;

@@ -189,29 +189,58 @@ function plotLine(ctx, fromX, fromY, toX, toY){
 // Circular buffer tool 
 //----------------------
 
-function circularBuffer(size){
-	this.buffer = new Float64Array(size);
+function circularBuffer(size, bufferType){
+	this._buffType = bufferType || Float64Array;
+	this.buffer = new this._buffType(size);
 	for(var i = 0; i < size; i++){
 		this.buffer[i] = NaN;
 	}
-	this.n = 0;
+	this._n = 0;
 	this.len = size;
 	this.full = false;
 }
 
 circularBuffer.prototype.add = function(item){
-	this.buffer[this.n] = item;
-	this.n = (this.n + 1) % this.len;
+	this.buffer[this._n] = item;
+	this._n = (this._n + 1) % this.len;
 	if(this.n){return;} // if n is zero at this point, it's gone full circle and is full
 	this.full = true;
-}
+};
 
 circularBuffer.prototype.get = function(index){
-	var n = !this.full ? 0 : this.n;
+	var n = !this.full ? 0 : this._n;
 	var end = this.getEnd();
 	return this.buffer[(n + index + end) % end];
-}
+};
 
 circularBuffer.prototype.getEnd = function(){
-	return !this.full ? this.n : this.len;
-}
+	return !this.full ? this._n : this.len;
+};
+
+circularBuffer.prototype.resize = function(newSize){
+	if(newSize === this.len){return;}
+	var newBuffer = new this._buffType(newSize);
+	var end = this.getEnd();
+	if(newSize > end){
+		var i;
+		for(i = 0; i < end; i++){
+			newBuffer[i] = this.get(i);
+		}
+
+		while(i < newSize){
+			newBuffer[i++] = NaN;
+		}
+
+		this._n = end;
+		this.full = false;
+	} else { // Keep only the NEWEST data
+		for(var i = 1; i <= newSize; i++){
+			newBuffer[newSize - i] = this.get(-i);
+		}
+
+		this._n = 0;
+		this.full = true;
+	}
+	this.buffer = newBuffer;
+	this.len = newSize;
+};
