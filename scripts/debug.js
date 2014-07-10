@@ -11,7 +11,7 @@ var Debug = new Mode({
 
 		// Make the render button in debug work.
 		$('#Render').bind("click", function(evt) {
-			G.render = !G.render;
+			G.render = !this.hasClass("active");
 			//console.log(g_render);
 		});
 
@@ -51,30 +51,36 @@ var Debug = new Mode({
 
 		// Activate Osc./Mic. button
 		$("#Oscillator").bind("click", function(evt){
-			if(this.active){
+			if($(this).hasClass("active")){
 				oscNode.disconnect();
 				G.microphone.connect(gainNode);
-				this.active = false;
 			} else {
 				G.microphone.disconnect();
 				oscNode.connect(gainNode);
-				this.active = true;
 			}
 		});
 
 		// Activate Feedback button
 		//analyser.connect(context.destination); // Leave mic to speaker playback off by default
-		$("#Feedback").bind("click",function(){
-			if(this.active){
+		$("#Feedback").bind("click",function(evt){
+			//console.log($(this));
+			if($(this).hasClass("active")){
 				analyNode.disconnect();
 				//processor.disconnect();
-				this.active=false;
 			} else {
 				analyNode.connect(G.context.destination);
 				//processor.connect(context.destination);
-				this.active=true;
 			}
 		});
+
+		// Activate Toggle Voice Line Button
+		$("#VoiceLine").bind("click",function(evt){
+			if(PianoRoll.voiceStarted){
+				PianoRoll.stopVoice();
+			} else {
+				PianoRoll.startVoice();
+			}
+		})
 	},
 
 	render: function(){
@@ -99,6 +105,10 @@ var Debug = new Mode({
 		pit.h = pit.canvas.height;
 		fft.diff = fft.w/(G.fftMax - G.fftMin+1);
 		wf.diff = wf.w/wf.l;
+	},
+
+	update: function(){
+		PianoRoll.voiceStarted ? $("#VoiceLine").addClass("active") : $("#VoiceLine").removeClass("active");
 	}
 });
 
