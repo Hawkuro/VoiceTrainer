@@ -2,7 +2,7 @@ var Debug = new Mode({
 	element: "debug",
 
 	firstInit: function(mic, oscNode, gainNode, proc, analyNode){
-		MIDI.loader = new widgets.Loader;
+		MIDI.loader = new widgets.Loader(false);
 		MIDI.loadPlugin(function(){
 			MIDI.Player.loadFile(midiData[0], emptyFunc);
 			$(".loader").hide();
