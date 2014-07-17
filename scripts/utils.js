@@ -185,15 +185,21 @@ function plotLine(ctx, fromX, fromY, toX, toY){
 	ctx.lineTo(toX,toY);
 }
 
+function noteYPos(Note, lineDiff, canvHeight, centerNote){
+	centerNote = centerNote || NoteHandler.getFromNoteName("A", 4);
+	var diff = (centerNote.getNotePitch() - Note.getNotePitch())*lineDiff;
+	return canvHeight/2 + diff;
+}
+
 //----------------------
 // Circular buffer tool 
 //----------------------
 
 function circularBuffer(size, bufferType){
-	this._buffType = bufferType || Float64Array;
-	this.buffer = new this._buffType(size);
+	this._buffType = bufferType || Float32Array;
+	this._buffer = new this._buffType(size);
 	for(var i = 0; i < size; i++){
-		this.buffer[i] = NaN;
+		this._buffer[i] = NaN;
 	}
 	this._n = 0;
 	this.len = size;
@@ -201,7 +207,7 @@ function circularBuffer(size, bufferType){
 }
 
 circularBuffer.prototype.add = function(item){
-	this.buffer[this._n] = item;
+	this._buffer[this._n] = item;
 	this._n = (this._n + 1) % this.len;
 	if(this.n){return;} // if n is zero at this point, it's gone full circle and is full
 	this.full = true;
@@ -210,7 +216,7 @@ circularBuffer.prototype.add = function(item){
 circularBuffer.prototype.get = function(index){
 	var n = !this.full ? 0 : this._n;
 	var end = this.getEnd();
-	return this.buffer[(n + index + end) % end];
+	return this._buffer[(n + index + end) % end];
 };
 
 circularBuffer.prototype.getEnd = function(){
@@ -241,6 +247,6 @@ circularBuffer.prototype.resize = function(newSize){
 		this._n = 0;
 		this.full = true;
 	}
-	this.buffer = newBuffer;
+	this._buffer = newBuffer;
 	this.len = newSize;
 };
