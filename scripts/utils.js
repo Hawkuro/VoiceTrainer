@@ -250,3 +250,27 @@ circularBuffer.prototype.resize = function(newSize){
 	this._buffer = newBuffer;
 	this.len = newSize;
 };
+
+//---------------
+// General utils
+//---------------
+
+function findMarginIndices(data){
+	var starts = new Array(data.length);
+	var ends = new Array(data.length);
+	for(var i = 0; i < data.length; i++){
+		if(!data[i]){continue;}
+		if( !data[i].continuation || 
+			!data[i-1] ||
+			data[i].note != data[i-1].note){
+			starts[i] = true;
+		}
+		if( !data[i+1] ||
+			!data[i+1].continuation || 
+			data[i].note != data[i+1].note){
+			ends[i] = true;
+		}
+	}
+
+	return {starts: starts, ends: ends}
+}
