@@ -17,6 +17,7 @@ var Globals = {
 	freq: undefined,
 	fftMin: 1,
 	fftMax: SAMPLE_SIZE/16,
+	MIDILoaded: false,
 
 	update: function(data){
 		G.data = data;
