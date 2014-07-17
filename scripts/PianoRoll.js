@@ -7,6 +7,7 @@ var PianoRoll = new Mode({
 	init: function(){
 		//console.log(this.canv.w - this.frameOffset);
 		this.frameOffset = Math.floor(this.canv.w*0.1);
+		this.canv.ctx.lineWidth = 2;
 	},
 
 	element: "pianoRoll",
@@ -15,13 +16,13 @@ var PianoRoll = new Mode({
 		adjustCanvas(this.canv.canvas);
 		this.canv.h = this.canv.canvas.height;
 		this.canv.w = this.canv.canvas.width;
-		if(this.started){
+		if(this.voiceStarted){
 			this.resizeBuffers(this.canv.w + 100);
 		}
 	},
 
 	update: function(){
-		if(this.started){
+		if(this.voiceStarted){
 			var currTime = Date.now()*this.timeScaler - this.startTime; // Time from start
 			this.timeBuffer.add(currTime);
 			this.pitchBuffer.add((NoteHandler.getFromFreq(toFreq(G.top)).getNotePitch() - this.toneOffset)*this.lineDiff);
@@ -35,7 +36,7 @@ var PianoRoll = new Mode({
 
 			this.cameraOffset = this.translate ? this.frameOffset - this.timeBuffer.get(-1) : 0;
 		} else if(this.shouldStart()) {
-			this.start();
+			this.startVoice();
 		}
 	},
 
@@ -47,7 +48,7 @@ var PianoRoll = new Mode({
 
 		this.panCam(ctx);
 
-		if(this.started || this.stopped){
+		if(this.voiceStarted || this.voiceStopped){
 			this.drawBuffer(ctx);
 		}
 
@@ -60,25 +61,25 @@ PianoRoll.shouldStart = function(){
 	return Math.max(G.fftAn.spectrum[i], G.fftAn.spectrum[i+1]) > PIANO_ROLL_START_THRESHHOLD;
 };
 
-PianoRoll.start = function(){
-	this.stopped = false;
-	this.started = true;
+PianoRoll.startVoice = function(){
+	this.voiceStopped = false;
+	this.voiceStarted = true;
 	this.pitchBuffer = new circularBuffer(this.frameOffset+100);
 	this.timeBuffer = new circularBuffer(this.frameOffset+100);
 	this.translate = false;
 	this.startTime = Date.now()*this.timeScaler;
 };
 
-PianoRoll.stop = function(){
-	this.started = false;
-	this.stopped = true;
+PianoRoll.stopVoice = function(){
+	this.voiceStarted = false;
+	this.voiceStopped = true;
 };
 
 PianoRoll.drawLines = function(ctx){
-	var baseHeight = this.canv.h/2 - 5.5*this.lineDiff;
+	//var baseHeight = this.canv.h/2 - 5.5*this.lineDiff;
 	ctx.beginPath();
-	for(var i = 0; i < 12; i++){
-		var h = baseHeight + i*this.lineDiff;
+	for(var i = 0; i < 13; i++){
+		var h = noteYPos(NoteHandler.getFromPitch(63+i), this.lineDiff, this.canv.h);//baseHeight + i*this.lineDiff;
 		plotLine(ctx, 0, h, this.canv.w, h);
 	}
 	ctx.stroke();
@@ -92,6 +93,9 @@ PianoRoll.panCam = function(ctx){
 PianoRoll.drawBuffer = function(ctx){
 	//console.log("here");
 	ctx.strokeStyle = "blue";
+	ctx.lineWidth = 4;
+	ctx.lineCap = "round";
+	ctx.lineJoin = "round";
 	ctx.beginPath();
 	ctx.moveTo(this.timeBuffer.get(0), this.canv.h/2 - this.pitchBuffer.get(0));
 	for(var i = 1; i < this.pitchBuffer.getEnd(); i++){
@@ -109,10 +113,10 @@ PianoRoll.pitchBuffer = undefined;
 PianoRoll.timeBuffer = undefined;
 PianoRoll.startTime = undefined;
 PianoRoll.canv = undefined;
-PianoRoll.lineDiff = 16;
-PianoRoll.toneOffset = 57;
+PianoRoll.lineDiff = 32;
+PianoRoll.toneOffset = NoteHandler._baseOffset;
 PianoRoll.frameOffset = 50;
 PianoRoll.timeScaler = undefined;
 PianoRoll.translate = false;
-PianoRoll.started = false;
-PianoRoll.stopped = false;
+PianoRoll.voiceStarted = false;
+PianoRoll.voiceStopped = false;
