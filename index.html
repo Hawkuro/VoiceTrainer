@@ -2,13 +2,13 @@
 <html lang=is>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
 		<!-- Latest compiled and minified CSS -->
-		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"/>
 
 		<!-- Optional theme -->
-		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css"/>
 
 		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
@@ -23,10 +23,26 @@
 		  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
 		<![endif]-->
 
+		<script type="text/javascript" src="scripts/lib/Base64.js"></script>
+		<!--script type="text/javascript" src="scripts/lib/WebMIDIAPI.js"></script-->
+		<script type="text/javascript" src="scripts/lib/base64binary.js"></script>
+
 		<script type="text/javascript" src="scripts/lib/dsp.js"></script>
+		<script type="text/javascript" src="scripts/lib/MIDI.js"></script>
+		<script type="text/javascript" src="scripts/lib/jasmid/stream.js"></script>
+		<script type="text/javascript" src="scripts/lib/jasmid/midifile.js"></script>
+		<script type="text/javascript" src="scripts/lib/jasmid/replayer.js"></script>
+		<script type="text/javascript" src="scripts/lib/Loader.js"></script>
+		<script type="text/javascript" src="scripts/lib/DOMLoader.XMLHttp.js"></script>
+		<script type="text/javascript" src="scripts/lib/Event.js"></script>
+		<script type="text/javascript" src="scripts/lib/Queue.js"></script>
+
+		<script type="text/javascript" src="midiFiles.js"></script>
+
 		<script type="text/javascript" src="scripts/NoteConverter.js"></script>
 		<script type="text/javascript" src="scripts/utils.js"></script>
 		<script type="text/javascript" src="scripts/Mode.js"></script>
+		<script type="text/javascript" src="scripts/VocLine"></script>
 		<script type="text/javascript" src="scripts/PianoRoll.js"></script>
 		<script type="text/javascript" src="scripts/debug.js"></script>
 		<script type="text/javascript" src="scripts/ModeHandler.js"></script>
@@ -79,7 +95,11 @@
 			<!-- Debug module -->
 			<div class="container row module" id="debug">
 				<div class="container row">
-					<div class="container col-lg-2"><button type="button" data-toggle="button" class="btn btn-primary btn-lg" id="Feedback">Toggle Feedback</button></div>
+					<div class="container col-lg-2">
+						<button type="button" data-toggle="button" class="btn btn-primary btn-lg" id="Feedback">Toggle Feedback</button>
+						<button type="button" data-toggle="button" class="btn btn-primary btn-lg" id="VoiceLine">Toggle Voice Line</button>
+
+					</div>
 					<div class="container col-lg-3">
 						<div class="panel panel-default">
 							<div class="panel-heading">
