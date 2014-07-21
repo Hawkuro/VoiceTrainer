@@ -55,7 +55,7 @@ Melody.prototype.play = function(){
 	this.playing = true;
 	this.startPlayTime = Date.now()/1000;
 	for(var i = 0; i < this.data.length; i++){
-		if(!data[i]){continue;}
+		if(!this.data[i]){continue;}
 		if(this.margins.starts[i]){this._startNote(this.data[i].note,i);}
 		if(this.margins.ends[i]){this._endNote(this.data[i].note,i);}
 	}
@@ -69,11 +69,12 @@ Melody.prototype.stopPlay = function(){
 };
 
 Melody.prototype._startNote = function(Note, index){
-	MIDI.noteOn(0, Note.getNoteNumber(), 1, (this._delay + this.noteLength*index - this.startPlayTime) + Date.now()/1000);
+	//console.log((this._delay + this.noteLength*index + this.startPlayTime) - Date.now()/1000);
+	MIDI.noteOn(0, Note.getNoteNumber(), 1, (this._delay + this.noteLength*index + this.startPlayTime) - Date.now()/1000);
 };
 
 Melody.prototype._endNote = function(Note, index){
-	MIDI.noteOn(0, Note.getNoteNumber(), (this._delay + this.noteLength*(index+1) - this.startPlayTime) + Date.now()/1000);
+	MIDI.noteOff(0, Note.getNoteNumber(), (this._delay + this.noteLength*(index+1) + this.startPlayTime) - Date.now()/1000);
 };
 
 Melody.prototype._delay = 0.5;
