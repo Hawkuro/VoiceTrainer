@@ -255,6 +255,8 @@ circularBuffer.prototype.resize = function(newSize){
 // General utils
 //---------------
 
+// Melody utils
+
 function findMarginIndices(data){
 	var starts = new Array(data.length);
 	var ends = new Array(data.length);
