@@ -274,3 +274,10 @@ function findMarginIndices(data){
 
 	return {starts: starts, ends: ends}
 }
+
+function fixVocLineData(data){
+	data.forEach(function(item, index, array){
+		item.note = NoteHandler.getFromNoteName(item.noteName[0],item.noteName[1]);
+	});
+	return data;
+}

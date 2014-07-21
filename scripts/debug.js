@@ -196,3 +196,9 @@ Debug.renderFFT = function(spectrum, canvasContainer, top, diff, tops){
 
 	drawTopLine(top, "#ff0000");
 }
+
+var testMelody = new Melody([
+	{noteName: ["A",4]},
+	{noteName: ["C",4]},
+	{noteName: ["G",4]},
+], 1000);
